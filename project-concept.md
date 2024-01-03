@@ -21,14 +21,16 @@ Use a multitude of cloud services
 
 ## Functional Requirements
 
-The application code itself should be programmed in Scala.
-The pipeline should be completely cloud-based (Microsoft Azure).
-The data processing should be done using Apache Spark.
-The infrastructure for this pipeline should be constructed through Terraform.
-The final application should be containerised with Docker.
+The application code itself should be programmed in Scala.  
+The pipeline should be completely cloud-based (Microsoft Azure).  
+The data processing should be done using Apache Spark.  
+The infrastructure for this pipeline should be constructed through Terraform.  
+The final application should be containerised with Docker.  
 
 ## Non-functional Requirements
 
-Security: All configuration secrets should be stored in the cloud.
+Security:  
+All configuration secrets should be stored in the cloud.  
 
-Cost: Cloud costs should be kept to a minimum. Budgets & estimations are included to prevent cost issues.
+Cost:  
+Cloud costs should be kept to a minimum. Budgets & estimations are included to prevent cost issues.
