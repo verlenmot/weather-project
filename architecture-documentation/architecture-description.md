@@ -12,9 +12,9 @@ For real-time data, the API is called every 10 minutes.
 
 ## Azure Data Lake Storage Gen 2  
 
-The raw data will be ingested into an Azure Data Lake.  
-In doing so, historical analysis can be performed later on.
-Databricks is compatible with HDFS-based storage, this will be used for data processing.
+The raw data will be ingested into an Azure Data Lake, both for processing and for archival.  
+The forecast data and real-time data will be kept in separate directories.  
+The processed data is stored in a separate Azure Data Lake.  
 
 ## Spark on Databricks
 
