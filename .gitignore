@@ -1,3 +1,7 @@
+# Internal project files
 internal/
-**/.DS_Store
 config/
+
+# Git files
+**/.DS_Store
+
