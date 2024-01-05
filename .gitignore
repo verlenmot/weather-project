@@ -1,6 +1,10 @@
 # Internal project files
 internal/
-config/
+**/*.tfstate*
+**/*.tfvars
+**/*.terraform*
+
+
 
 # Git files
 **/.DS_Store
