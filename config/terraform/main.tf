@@ -69,3 +69,12 @@ resource "azurerm_storage_container" "realtime-serve" {
   name = "realtime"
   storage_account_name = azurerm_storage_account.storage-serve.name
 }
+
+# Key vault
+resource "azurerm_key_vault" "keyvault" {
+  name = "kv-weather-project"
+  location = "West Europe"
+  resource_group_name = azurerm_resource_group.rg.name
+  sku_name = "standard"
+  tenant_id = var.tenant_id
+}
