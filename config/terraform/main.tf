@@ -31,8 +31,7 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.55.0.0/16"]
 }
 
-# Storage Account & Data Lakes
-
+# Storage Accounts & Containers
 resource "azurerm_storage_account" "storage-raw" {
   name                     = "stweatherprojectraw"
   location                 = "West Europe"
@@ -41,6 +40,17 @@ resource "azurerm_storage_account" "storage-raw" {
   account_tier             = "Standard"
   account_replication_type = "GRS"
 }
+
+resource "azurerm_storage_container" "forecast-raw" {
+  name = "forecast"
+  storage_account_name = azurerm_storage_account.storage-raw.name
+}
+
+resource "azurerm_storage_container" "realtime-raw" {
+  name = "realtime"
+  storage_account_name = azurerm_storage_account.storage-raw.name
+}
+
 resource "azurerm_storage_account" "storage-serve" {
   name                     = "stweatherprojectserve"
   location                 = "West Europe"
@@ -50,3 +60,12 @@ resource "azurerm_storage_account" "storage-serve" {
   account_replication_type = "GRS"
 }
 
+resource "azurerm_storage_container" "forecast-serve" {
+  name = "forecast"
+  storage_account_name = azurerm_storage_account.storage-serve.name
+}
+
+resource "azurerm_storage_container" "realtime-serve" {
+  name = "realtime"
+  storage_account_name = azurerm_storage_account.storage-serve.name
+}
