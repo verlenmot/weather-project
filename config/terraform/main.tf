@@ -36,6 +36,21 @@ subnet {
 }
 }
 
+# Retrieve subnet 
+
+
+resource "azurerm_network_security_group" "nsg" {
+  name = "nsg-weather-project"
+  resource_group_name = azurerm_resource_group.rg.name
+  location = "West Europe"
+}
+
+resource "azurerm_subnet_network_security_group_association" "nsg-association" {
+  subnet_id = azurerm_virtual_network.vnet.subnet.*.id[0]
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
+ 
+
 
 # # Storage Accounts & Containers
 # resource "azurerm_storage_account" "storage-raw" {
