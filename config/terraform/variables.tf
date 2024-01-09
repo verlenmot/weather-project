@@ -6,6 +6,10 @@ variable "subscription_id" {
 
 variable "tenant_id" {
   description = "Tenant ID to be used"
+  default     = ""
+  type        = string
+}
+
+variable "ip" {
   default = ""
-  type = string
 }
