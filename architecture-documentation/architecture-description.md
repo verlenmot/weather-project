@@ -35,20 +35,21 @@ To retrieve data from the API and to process data, jobs are used.
 
 The dashboard will be delivered through Power BI.  
 
-## Azure Virtual Network
-
-An Azure Virtual Network with security groups is set up so that the services can communicate with each other.  
-
 ## Azure Key Vault
 
-All configuration secrets are kept in the cloud in azure key vault to ensure security.  
+Azure Key Vault is used to contain the secret scope for Databricks.
+
+## Azure Network Rules
+
+The Azure Storage Accounts and Azure Key Vault have network rules that deny all access unless it comes from trusted Microsoft Services.
 
 ## Terraform
 
 The infrastructure for the application is automatically created with Terraform.  
-The backend configuration is azurerm, this ensures security of infrastructure.
+While developing, the backend is local.
+The final backend configuration will be azurerm, this ensures security of infrastructure.
 
 ## Docker
 
 The application is delivered as a Dockerfile.  
-In this way, complexity of trying out the application is kept to a minimum.  
+In this way, complexity of trying out the application is kept to a minimum.
