@@ -8,12 +8,13 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
-
+  features {
+    
+  }
   subscription_id = var.subscription_id
 }
 
-# Resource Group
+# Resource Group & Budget to prevent costs
 resource "azurerm_resource_group" "rg" {
   name     = "rg-weather-project"
   location = "West Europe"
@@ -21,6 +22,25 @@ resource "azurerm_resource_group" "rg" {
     project = "weather"
   }
 }
+
+# resource "azurerm_consumption_budget_resource_group" "bdg" {
+#   name = "bdg-weather-project"
+#   resource_group_id = azurerm_resource_group.rg.id
+
+#   amount = 5
+#   time_grain = "Monthly"
+
+#   time_period {
+#     start_date = timestamp()
+#   }
+
+#   notification {
+#     enabled = false
+#     operator = "EqualTo"
+#     threshold = 90.0
+#     contact_emails = ["Filler@filler.outlook"]
+#   }
+# }
 
 
 # Virtual Network
@@ -30,14 +50,14 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = azurerm_resource_group.rg.name
   address_space       = ["10.0.0.0/16"]
 
-subnet {
+}
+resource "azurerm_subnet" "snet" {
   name = "snet-weather-project"
-  address_prefix = "10.0.0.0/24"
+  resource_group_name = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes = ["10.0.0.0/24"]
+  service_endpoints = ["Microsoft.KeyVault", "Microsoft.Storage"]
 }
-}
-
-# Retrieve subnet 
-
 
 resource "azurerm_network_security_group" "nsg" {
   name = "nsg-weather-project"
@@ -45,55 +65,65 @@ resource "azurerm_network_security_group" "nsg" {
   location = "West Europe"
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg-association" {
-  subnet_id = azurerm_virtual_network.vnet.subnet.*.id[0]
-  network_security_group_id = azurerm_network_security_group.nsg.id
+# Note - Adjust rules so that container creation is possible.
+# resource "azurerm_subnet_network_security_group_association" "nsg-association" {
+#   subnet_id = azurerm_virtual_network.vnet.subnet.*.id[0]
+#   network_security_group_id = azurerm_network_security_group.nsg.id
+# }
+
+# Storage Accounts & Containers
+resource "azurerm_storage_account" "storage-raw" {
+  name                     = "stweatherprojectraw"
+  location                 = "West Europe"
+  resource_group_name      = azurerm_resource_group.rg.name
+  account_kind             = "StorageV2"
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+  is_hns_enabled = true
+
+  network_rules {
+    default_action = "Deny"
+    virtual_network_subnet_ids = [azurerm_subnet.snet.id]
+  }
+
+
 }
- 
 
+resource "azurerm_storage_container" "forecast-raw" {
+  name = "forecast"
+  storage_account_name = azurerm_storage_account.storage-raw.name
+}
 
-# # Storage Accounts & Containers
-# resource "azurerm_storage_account" "storage-raw" {
-#   name                     = "stweatherprojectraw"
-#   location                 = "West Europe"
-#   resource_group_name      = azurerm_resource_group.rg.name
-#   account_kind             = "StorageV2"
-#   account_tier             = "Standard"
-#   account_replication_type = "GRS"
-#   is_hns_enabled = true
-#   public_network_access_enabled = false
-# }
+resource "azurerm_storage_container" "realtime-raw" {
+  name = "realtime"
+  storage_account_name = azurerm_storage_account.storage-raw.name
+}
 
-# resource "azurerm_storage_container" "forecast-raw" {
-#   name = "forecast"
-#   storage_account_name = azurerm_storage_account.storage-raw.name
-# }
+resource "azurerm_storage_account" "storage-serve" {
+  name                     = "stweatherprojectserve"
+  location                 = "West Europe"
+  resource_group_name      = azurerm_resource_group.rg.name
+  account_kind             = "StorageV2"
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+  is_hns_enabled = true
 
-# resource "azurerm_storage_container" "realtime-raw" {
-#   name = "realtime"
-#   storage_account_name = azurerm_storage_account.storage-raw.name
-# }
+   network_rules {
+    default_action = "Deny"
+    ip_rules = 
+    virtual_network_subnet_ids = [azurerm_subnet.snet.id]
+  }
+}
 
-# resource "azurerm_storage_account" "storage-serve" {
-#   name                     = "stweatherprojectserve"
-#   location                 = "West Europe"
-#   resource_group_name      = azurerm_resource_group.rg.name
-#   account_kind             = "StorageV2"
-#   account_tier             = "Standard"
-#   account_replication_type = "GRS"
-#   is_hns_enabled = true
-#   public_network_access_enabled = false
-# }
+resource "azurerm_storage_container" "forecast-serve" {
+  name = "forecast"
+  storage_account_name = azurerm_storage_account.storage-serve.name
+}
 
-# resource "azurerm_storage_container" "forecast-serve" {
-#   name = "forecast"
-#   storage_account_name = azurerm_storage_account.storage-serve.name
-# }
-
-# resource "azurerm_storage_container" "realtime-serve" {
-#   name = "realtime"
-#   storage_account_name = azurerm_storage_account.storage-serve.name
-# }
+resource "azurerm_storage_container" "realtime-serve" {
+  name = "realtime"
+  storage_account_name = azurerm_storage_account.storage-serve.name
+}
 
 # # Key vault
 # resource "azurerm_key_vault" "keyvault" {
@@ -104,7 +134,7 @@ resource "azurerm_subnet_network_security_group_association" "nsg-association" {
 #   tenant_id = var.tenant_id
 # }
 
-# Databricks
+# # Databricks
 
 # resource "azurerm_databricks_workspace" "Databricks" {
 #   name = "dbw-weather-project"
@@ -113,5 +143,5 @@ resource "azurerm_subnet_network_security_group_association" "nsg-association" {
 #   sku = "standard"
 # }
 
-# Power BI
+# # Power BI
 # Add later
