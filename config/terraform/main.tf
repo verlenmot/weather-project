@@ -59,95 +59,115 @@ resource "azurerm_subnet" "snet" {
   service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
 }
 
-resource "azurerm_network_security_group" "nsg" {
-  name                = "nsg-weather-project"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = "westeurope"
+resource "azurerm_subnet" "snet-dbw-container" {
+  name                 = "snet-weather-project-container"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+  service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
 }
 
-# Note - Adjust rules so that container creation is possible.
-resource "azurerm_subnet_network_security_group_association" "nsg-association" {
-  subnet_id                 = azurerm_subnet.snet.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
+resource "azurerm_subnet" "snet-dbw-host" {
+  name                 = "snet-weather-project-host"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.2.0/24"]
+  service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
 }
 
-# Storage Accounts & Containers
-resource "azurerm_storage_account" "storage-raw" {
-  name                     = "stweatherprojectraw"
-  location                 = "westeurope"
-  resource_group_name      = azurerm_resource_group.rg.name
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-  is_hns_enabled           = true
 
-  network_rules {
-    default_action             = "Deny"
-    virtual_network_subnet_ids = [azurerm_subnet.snet.id]
-    ip_rules                   = [var.ip]
-  }
-}
 
-resource "azurerm_storage_container" "forecast-raw" {
-  name                 = "forecast"
-  storage_account_name = azurerm_storage_account.storage-raw.name
-}
 
-resource "azurerm_storage_container" "realtime-raw" {
-  name                 = "realtime"
-  storage_account_name = azurerm_storage_account.storage-raw.name
-}
+# resource "azurerm_network_security_group" "nsg" {
+#   name                = "nsg-weather-project"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   location            = "westeurope"
+# }
 
-resource "azurerm_storage_account" "storage-serve" {
-  name                     = "stweatherprojectserve"
-  location                 = "westeurope"
-  resource_group_name      = azurerm_resource_group.rg.name
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-  is_hns_enabled           = true
+# # Note - Adjust rules so that container creation is possible.
+# resource "azurerm_subnet_network_security_group_association" "nsg-association" {
+#   subnet_id                 = azurerm_subnet.snet.id
+#   network_security_group_id = azurerm_network_security_group.nsg.id
+# }
 
-  network_rules {
-    default_action             = "Deny"
-    virtual_network_subnet_ids = [azurerm_subnet.snet.id]
-    ip_rules                   = [var.ip]
-  }
-}
+# # Storage Accounts & Containers
+# resource "azurerm_storage_account" "storage-raw" {
+#   name                     = "stweatherprojectraw"
+#   location                 = "westeurope"
+#   resource_group_name      = azurerm_resource_group.rg.name
+#   account_kind             = "StorageV2"
+#   account_tier             = "Standard"
+#   account_replication_type = "GRS"
+#   is_hns_enabled           = true
 
-resource "azurerm_storage_container" "forecast-serve" {
-  name                 = "forecast"
-  storage_account_name = azurerm_storage_account.storage-serve.name
-}
+#   network_rules {
+#     default_action             = "Deny"
+#     virtual_network_subnet_ids = [azurerm_subnet.snet.id]
+#     ip_rules                   = [var.ip]
+#   }
+# }
 
-resource "azurerm_storage_container" "realtime-serve" {
-  name                 = "realtime"
-  storage_account_name = azurerm_storage_account.storage-serve.name
-}
+# resource "azurerm_storage_container" "forecast-raw" {
+#   name                 = "forecast"
+#   storage_account_name = azurerm_storage_account.storage-raw.name
+# }
 
-# # Key vault
-resource "azurerm_key_vault" "keyvault" {
-  name                = "kv-weather-project"
-  location            = "westeurope"
-  resource_group_name = azurerm_resource_group.rg.name
-  sku_name            = "standard"
-  tenant_id           = var.tenant_id
+# resource "azurerm_storage_container" "realtime-raw" {
+#   name                 = "realtime"
+#   storage_account_name = azurerm_storage_account.storage-raw.name
+# }
 
-  network_acls {
-    default_action = "Deny"
-    virtual_network_subnet_ids = [ azurerm_subnet.snet.id ]
-    ip_rules = [ var.ip ]
-    bypass = "None"
-  }
-}
+# resource "azurerm_storage_account" "storage-serve" {
+#   name                     = "stweatherprojectserve"
+#   location                 = "westeurope"
+#   resource_group_name      = azurerm_resource_group.rg.name
+#   account_kind             = "StorageV2"
+#   account_tier             = "Standard"
+#   account_replication_type = "GRS"
+#   is_hns_enabled           = true
 
-# # Databricks
+#   network_rules {
+#     default_action             = "Deny"
+#     virtual_network_subnet_ids = [azurerm_subnet.snet.id]
+#     ip_rules                   = [var.ip]
+#   }
+# }
 
-resource "azurerm_databricks_workspace" "Databricks" {
-  name                = "dbw-weather-project"
-  location            = "westeurope"
-  resource_group_name = azurerm_resource_group.rg.name
-  sku                 = "standard"
-}
+# resource "azurerm_storage_container" "forecast-serve" {
+#   name                 = "forecast"
+#   storage_account_name = azurerm_storage_account.storage-serve.name
+# }
 
-# # Power BI
-# Add later
+# resource "azurerm_storage_container" "realtime-serve" {
+#   name                 = "realtime"
+#   storage_account_name = azurerm_storage_account.storage-serve.name
+# }
+
+# # # Key vault
+# resource "azurerm_key_vault" "keyvault" {
+#   name                = "kv-weather-project"
+#   location            = "westeurope"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   sku_name            = "standard"
+#   tenant_id           = var.tenant_id
+
+#   network_acls {
+#     default_action = "Deny"
+#     virtual_network_subnet_ids = [ azurerm_subnet.snet.id ]
+#     ip_rules = [ var.ip ]
+#     bypass = "None"
+#   }
+# }
+
+# # # Databricks
+
+# resource "azurerm_databricks_workspace" "Databricks" {
+#   name                = "dbw-weather-project"
+#   location            = "westeurope"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   sku                 = "standard"
+#   managed_resource_group_name = "rg-managed-weather-project"
+# }
+
+# # # Power BI
+# # Add later
