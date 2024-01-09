@@ -52,26 +52,10 @@ resource "azurerm_virtual_network" "vnet" {
 
 }
 resource "azurerm_subnet" "snet" {
-  name                 = "snet-weather-project"
+  name                 = "snet-weather-project-main"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.0.0/24"]
-  service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
-}
-
-resource "azurerm_subnet" "snet-dbw-container" {
-  name                 = "snet-weather-project-container"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
-  service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
-}
-
-resource "azurerm_subnet" "snet-dbw-host" {
-  name                 = "snet-weather-project-host"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.2.0/24"]
   service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
 }
 
@@ -161,13 +145,13 @@ resource "azurerm_subnet" "snet-dbw-host" {
 
 # # # Databricks
 
-# resource "azurerm_databricks_workspace" "Databricks" {
-#   name                = "dbw-weather-project"
-#   location            = "westeurope"
-#   resource_group_name = azurerm_resource_group.rg.name
-#   sku                 = "standard"
-#   managed_resource_group_name = "rg-managed-weather-project"
-# }
+resource "azurerm_databricks_workspace" "Databricks" {
+  name                = "dbw-weather-project"
+  location            = "westeurope"
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "standard"
+  managed_resource_group_name = "rg-managed-weather-project"
+}
 
 # # # Power BI
 # # Add later
