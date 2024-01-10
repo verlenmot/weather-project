@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=3.86.0"
     }
+    databricks = {
+      source = "databricks/databricks"
+      version = "=1.33.0"
+    }
   }
 }
 
@@ -51,10 +55,11 @@ resource "azurerm_storage_account" "storage-raw" {
   account_tier             = "Standard"
   account_replication_type = "GRS"
   is_hns_enabled           = true
+  enable_https_traffic_only = true
 
   network_rules {
     default_action = "Deny"
-    ip_rules       = [var.ip]
+    ip_rules       = [var.ip, var.ip2]
     bypass         = ["AzureServices"]
   }
 }
@@ -69,56 +74,63 @@ resource "azurerm_storage_container" "realtime-raw" {
   storage_account_name = azurerm_storage_account.storage-raw.name
 }
 
-resource "azurerm_storage_account" "storage-serve" {
-  name                     = "stweatherprojectserve"
-  location                 = "westeurope"
-  resource_group_name      = azurerm_resource_group.rg.name
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-  is_hns_enabled           = true
+# resource "azurerm_storage_account" "storage-serve" {
+#   name                     = "stweatherprojectserve"
+#   location                 = "westeurope"
+#   resource_group_name      = azurerm_resource_group.rg.name
+#   account_kind             = "StorageV2"
+#   account_tier             = "Standard"
+#   account_replication_type = "GRS"
+#   is_hns_enabled           = true
+#   enable_https_traffic_only = true
 
-  network_rules {
-    default_action = "Deny"
-    ip_rules       = [var.ip]
-    bypass         = ["AzureServices"]
-  }
-}
+#   network_rules {
+#     default_action = "Deny"
+#     ip_rules       = [var.ip, var.ip2]
+#     bypass         = ["AzureServices"]
+#   }
+# }
 
-resource "azurerm_storage_container" "forecast-serve" {
-  name                 = "forecast"
-  storage_account_name = azurerm_storage_account.storage-serve.name
-}
+# resource "azurerm_storage_container" "forecast-serve" {
+#   name                 = "forecast"
+#   storage_account_name = azurerm_storage_account.storage-serve.name
+# }
 
-resource "azurerm_storage_container" "realtime-serve" {
-  name                 = "realtime"
-  storage_account_name = azurerm_storage_account.storage-serve.name
-}
+# resource "azurerm_storage_container" "realtime-serve" {
+#   name                 = "realtime"
+#   storage_account_name = azurerm_storage_account.storage-serve.name
+# }
 
-# # Key vault
-resource "azurerm_key_vault" "keyvault" {
-  name                = "kv-weather-project"
-  location            = "westeurope"
-  resource_group_name = azurerm_resource_group.rg.name
-  sku_name            = "standard"
-  tenant_id           = var.tenant_id
+# # # Key vault
+# resource "azurerm_key_vault" "keyvault" {
+#   name                = "kv-weather-project"
+#   location            = "westeurope"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   sku_name            = "standard"
+#   tenant_id           = var.tenant_id
 
-  network_acls {
-    default_action = "Deny"
-    ip_rules = [var.ip]
-    bypass   = "AzureServices"
-  }
-}
+#   network_acls {
+#     default_action = "Deny"
+#     ip_rules = [var.ip, var.ip2]
+#     bypass   = "AzureServices"
+    
+#   }
+# }
 
-# # # Databricks
+# # # # Databricks
 
-resource "azurerm_databricks_workspace" "Databricks" {
+resource "azurerm_databricks_workspace" "dbw" {
   name                        = "dbw-weather-project"
   location                    = "westeurope"
   resource_group_name         = azurerm_resource_group.rg.name
   sku                         = "standard"
   managed_resource_group_name = "rg-managed-weather-project"
 }
+
+resource "dsa" "name" {
+  
+}
+
 
 # # # Power BI
 # # Add later
