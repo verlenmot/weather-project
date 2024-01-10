@@ -18,6 +18,10 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
+provider "databricks" {
+  host = azurerm_databricks_workspace.dbw.workspace_url
+}
+
 # Resource Group & Budget to prevent costs
 resource "azurerm_resource_group" "rg" {
   name     = "rg-weather-project"
@@ -46,36 +50,9 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
   }
 }
 
-# Storage Accounts & Containers
-resource "azurerm_storage_account" "storage-raw" {
-  name                     = "stweatherprojectraw"
-  location                 = "westeurope"
-  resource_group_name      = azurerm_resource_group.rg.name
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-  is_hns_enabled           = true
-  enable_https_traffic_only = true
-
-  network_rules {
-    default_action = "Deny"
-    ip_rules       = [var.ip, var.ip2]
-    bypass         = ["AzureServices"]
-  }
-}
-
-resource "azurerm_storage_container" "forecast-raw" {
-  name                 = "forecast"
-  storage_account_name = azurerm_storage_account.storage-raw.name
-}
-
-resource "azurerm_storage_container" "realtime-raw" {
-  name                 = "realtime"
-  storage_account_name = azurerm_storage_account.storage-raw.name
-}
-
-# resource "azurerm_storage_account" "storage-serve" {
-#   name                     = "stweatherprojectserve"
+# # Storage Accounts & Containers
+# resource "azurerm_storage_account" "storage-raw" {
+#   name                     = "stweatherprojectraw"
 #   location                 = "westeurope"
 #   resource_group_name      = azurerm_resource_group.rg.name
 #   account_kind             = "StorageV2"
@@ -91,33 +68,60 @@ resource "azurerm_storage_container" "realtime-raw" {
 #   }
 # }
 
-# resource "azurerm_storage_container" "forecast-serve" {
+# resource "azurerm_storage_container" "forecast-raw" {
 #   name                 = "forecast"
-#   storage_account_name = azurerm_storage_account.storage-serve.name
+#   storage_account_name = azurerm_storage_account.storage-raw.name
 # }
 
-# resource "azurerm_storage_container" "realtime-serve" {
+# resource "azurerm_storage_container" "realtime-raw" {
 #   name                 = "realtime"
-#   storage_account_name = azurerm_storage_account.storage-serve.name
+#   storage_account_name = azurerm_storage_account.storage-raw.name
 # }
 
-# # # Key vault
-# resource "azurerm_key_vault" "keyvault" {
-#   name                = "kv-weather-project"
-#   location            = "westeurope"
-#   resource_group_name = azurerm_resource_group.rg.name
-#   sku_name            = "standard"
-#   tenant_id           = var.tenant_id
+# # resource "azurerm_storage_account" "storage-serve" {
+# #   name                     = "stweatherprojectserve"
+# #   location                 = "westeurope"
+# #   resource_group_name      = azurerm_resource_group.rg.name
+# #   account_kind             = "StorageV2"
+# #   account_tier             = "Standard"
+# #   account_replication_type = "GRS"
+# #   is_hns_enabled           = true
+# #   enable_https_traffic_only = true
 
-#   network_acls {
-#     default_action = "Deny"
-#     ip_rules = [var.ip, var.ip2]
-#     bypass   = "AzureServices"
+# #   network_rules {
+# #     default_action = "Deny"
+# #     ip_rules       = [var.ip, var.ip2]
+# #     bypass         = ["AzureServices"]
+# #   }
+# # }
+
+# # resource "azurerm_storage_container" "forecast-serve" {
+# #   name                 = "forecast"
+# #   storage_account_name = azurerm_storage_account.storage-serve.name
+# # }
+
+# # resource "azurerm_storage_container" "realtime-serve" {
+# #   name                 = "realtime"
+# #   storage_account_name = azurerm_storage_account.storage-serve.name
+# # }
+
+# # # # Key vault
+# # resource "azurerm_key_vault" "keyvault" {
+# #   name                = "kv-weather-project"
+# #   location            = "westeurope"
+# #   resource_group_name = azurerm_resource_group.rg.name
+# #   sku_name            = "standard"
+# #   tenant_id           = var.tenant_id
+
+# #   network_acls {
+# #     default_action = "Deny"
+# #     ip_rules = [var.ip, var.ip2]
+# #     bypass   = "AzureServices"
     
-#   }
-# }
+# #   }
+# # }
 
-# # # # Databricks
+# # # # # Databricks
 
 resource "azurerm_databricks_workspace" "dbw" {
   name                        = "dbw-weather-project"
@@ -127,8 +131,27 @@ resource "azurerm_databricks_workspace" "dbw" {
   managed_resource_group_name = "rg-managed-weather-project"
 }
 
-resource "dsa" "name" {
+
+
+
+## Development Cluster - Single Node
+resource "databricks_cluster" "dbcluster" {
+  cluster_name = "weather-project-cluster"
+  spark_version = "13.3.x-scala2.12"
+  node_type_id = "Standard_D3_v2"
+  runtime_engine = "STANDARD"
+  num_workers = 0
+  autotermination_minutes = 10
   
+
+  spark_conf = {
+    "spark.databricks.cluster.profile" : "singleNode"
+    "spark.master" : "local[*]"
+  }
+
+  custom_tags = {
+    "ResourceClass" = "SingleNode"
+  }
 }
 
 
