@@ -42,7 +42,9 @@ The dashboard will be delivered through Power BI.
 
 ## Azure Key Vault
 
-Azure Key Vault is used to contain the secret scope for Databricks.
+Azure Key Vault is used to contain the secret scope for Databricks.  
+
+Key Vault contains SAS tokens for storage containers (four in total)  
 
 ## Azure Network Rules
 
