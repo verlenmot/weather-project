@@ -19,7 +19,7 @@ provider "azurerm" {
     }
   }
 
-  subscription_id = data.azurerm_client_config.current.subscription_id
+  subscription_id = var.subscription_id
 }
 
 provider "databricks" {
@@ -146,7 +146,6 @@ resource "azurerm_key_vault" "kv" {
 
   }
 }
-
 
 resource "azurerm_key_vault_access_policy" "kv-access-storage" {
   key_vault_id = azurerm_key_vault.kv.id
