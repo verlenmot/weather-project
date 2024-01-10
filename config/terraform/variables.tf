@@ -3,17 +3,14 @@ variable "subscription_id" {
   default     = ""
   type        = string
 }
-
-variable "tenant_id" {
-  description = "Tenant ID to be used"
-  default     = ""
-  type        = string
-}
-
 variable "ip" {
   default = ""
 }
 
 variable "ip2" {
-  default = ""  
+  default = ""
+}
+
+variable "alert-email" {
+  default = ""
 }
