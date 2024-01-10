@@ -13,3 +13,7 @@ variable "tenant_id" {
 variable "ip" {
   default = ""
 }
+
+variable "ip2" {
+  default = ""  
+}
