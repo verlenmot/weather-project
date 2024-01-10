@@ -136,7 +136,7 @@ resource "azurerm_databricks_workspace" "dbw" {
 
 ## Development Cluster - Single Node
 resource "databricks_cluster" "dbcluster" {
-  cluster_name = "weather-project-cluster"
+  cluster_name = "cluster-weather-project"
   spark_version = "13.3.x-scala2.12"
   node_type_id = "Standard_D3_v2"
   runtime_engine = "STANDARD"
@@ -153,6 +153,18 @@ resource "databricks_cluster" "dbcluster" {
     "ResourceClass" = "SingleNode"
   }
 }
+
+# ## Development Notebook
+resource "databricks_notebook" "dbnotebook" {
+  language = "SCALA"
+  content_base64 = base64encode(<<-EOT
+
+  EOT
+  )
+  path = "/Shared/notebook-weather-project.sc"
+}
+
+
 
 
 # # # Power BI
