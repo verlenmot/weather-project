@@ -231,12 +231,12 @@ data "azurerm_storage_account_blob_container_sas" "sas-serve-forecast" {
 
 
   permissions {
-    read = true
-    write = false # Overwrite content of an existing blob
+    read = false
+    write = true # Overwrite content of an existing blob
     delete = false # Delete blobs
     create = true # Add new blobs
     list = true # List blobs
-    add = false # Append data to blob
+    add = true  # Append data to blob
   }
 }
 
@@ -249,12 +249,12 @@ data "azurerm_storage_account_blob_container_sas" "sas-serve-realtime" {
 
 
   permissions {
-    read = true
-    write = false # Overwrite content of an existing blob
+    read = false
+    write = true # Overwrite content of an existing blob
     delete = false # Delete blobs
     create = true # Add new blobs
     list = true # List blobs
-    add = false # Append data to blob
+    add = true  # Append data to blob
   }
 }
 
