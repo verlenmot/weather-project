@@ -22,7 +22,7 @@ provider "databricks" {
   host = azurerm_databricks_workspace.dbw.workspace_url
 }
 
-# Resource Group & Budget to prevent costs
+# Resource Group & Budgets to prevent costs
 resource "azurerm_resource_group" "rg" {
   name     = "rg-weather-project"
   location = "westeurope"
@@ -45,8 +45,27 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
   notification {
     enabled        = false
     operator       = "EqualTo"
-    threshold      = 90.0
-    contact_emails = ["Filler@filler.outlook"]
+    threshold      = 50.0
+    contact_emails = [var.alert-email]
+  }
+}
+
+resource "azurerm_consumption_budget_resource_group" "bdg-managed" {
+  name              = "bdg-managed-weather-project"
+  resource_group_id = azurerm_databricks_workspace.dbw.managed_resource_group_id
+
+  amount     = 5
+  time_grain = "Monthly"
+
+  time_period {
+    start_date = "2024-01-01T00:00:00Z"
+  }
+
+  notification {
+    enabled        = false
+    operator       = "EqualTo"
+    threshold      = 50.0
+    contact_emails = [var.alert-email]
   }
 }
 
