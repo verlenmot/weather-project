@@ -23,9 +23,14 @@ Spark clusters on Databricks are used to process the data.
 Although the API data is low volume, this application has scalability in mind.  
 The processing part should be able to handle a lot of different API calls.
 
+Databricks runtime 13.3 LTS, standard
+Spark Version 3.4.1
+Development cluster: Single node Standard_DS3_v2
+
 ## Scala code
 
-Scala code is written for API data retrievel and for Spark processing.  
+Scala code is written for API data retrieval and for Spark processing.  
+Scala version 2.12
 
 ## Orchestration
 
