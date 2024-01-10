@@ -11,6 +11,7 @@ terraform {
   }
 }
 
+# Providers
 provider "azurerm" {
   features {
     key_vault {
@@ -26,10 +27,11 @@ provider "databricks" {
   host = azurerm_databricks_workspace.dbw.workspace_url
 }
 
+# Client config to retrieve sensitive values
 data "azurerm_client_config" "current" {
 }
 
-# Resource Group & Budgets to prevent costs
+# Resource Group
 resource "azurerm_resource_group" "rg" {
   name     = "rg-weather-project"
   location = "westeurope"
@@ -38,6 +40,7 @@ resource "azurerm_resource_group" "rg" {
   }
 }
 
+## Budgets
 resource "azurerm_consumption_budget_resource_group" "bdg" {
   name              = "bdg-weather-project"
   resource_group_id = azurerm_resource_group.rg.id
@@ -130,60 +133,7 @@ resource "azurerm_storage_container" "realtime-serve" {
   name                 = "realtime"
   storage_account_name = azurerm_storage_account.storage-serve.name
 }
-
-# # Key vault
-resource "azurerm_key_vault" "kv" {
-  name                = "kv-weather-project"
-  location            = "westeurope"
-  resource_group_name = azurerm_resource_group.rg.name
-  sku_name            = "standard"
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-
-  network_acls {
-    default_action = "Deny"
-    ip_rules       = [var.ip, var.ip2]
-    bypass         = "AzureServices"
-
-  }
-}
-
-resource "azurerm_key_vault_access_policy" "kv-access-storage" {
-  key_vault_id = azurerm_key_vault.kv.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = data.azurerm_client_config.current.object_id
-
-  secret_permissions = ["Get", "Set", "List", "Delete", "Purge"]
-}
-
-resource "azurerm_key_vault_secret" "secret-sas-raw-forecast" {
-  name         = "sas-raw-forecast"
-  value        = data.azurerm_storage_account_blob_container_sas.sas-raw-forecast.sas
-  key_vault_id = azurerm_key_vault.kv.id
-  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
-}
-
-resource "azurerm_key_vault_secret" "secret-sas-raw-realtime" {
-  name         = "sas-raw-realtime"
-  value        = data.azurerm_storage_account_blob_container_sas.sas-raw-realtime.sas
-  key_vault_id = azurerm_key_vault.kv.id
-  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
-}
-
-resource "azurerm_key_vault_secret" "secret-sas-serve-forecast" {
-  name         = "sas-serve-forecast"
-  value        = data.azurerm_storage_account_blob_container_sas.sas-serve-forecast.sas
-  key_vault_id = azurerm_key_vault.kv.id
-  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
-}
-
-resource "azurerm_key_vault_secret" "secret-sas-serve-realtime" {
-  name         = "sas-serve-realtime"
-  value        = data.azurerm_storage_account_blob_container_sas.sas-serve-realtime.sas
-  key_vault_id = azurerm_key_vault.kv.id
-  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
-}
-
-# Storage Container Keys
+## Storage Container Keys
 
 data "azurerm_storage_account_blob_container_sas" "sas-raw-forecast" {
   connection_string = azurerm_storage_account.storage-raw.primary_connection_string
@@ -257,7 +207,59 @@ data "azurerm_storage_account_blob_container_sas" "sas-serve-realtime" {
   }
 }
 
-# # # # Databricks
+# Key vault
+resource "azurerm_key_vault" "kv" {
+  name                = "kv-weather-project"
+  location            = "westeurope"
+  resource_group_name = azurerm_resource_group.rg.name
+  sku_name            = "standard"
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+
+  network_acls {
+    default_action = "Deny"
+    ip_rules       = [var.ip, var.ip2]
+    bypass         = "AzureServices"
+
+  }
+}
+resource "azurerm_key_vault_access_policy" "kv-access-storage" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
+
+  secret_permissions = ["Get", "Set", "List", "Delete", "Purge"]
+}
+
+#$ Secrets
+resource "azurerm_key_vault_secret" "secret-sas-raw-forecast" {
+  name         = "sas-raw-forecast"
+  value        = data.azurerm_storage_account_blob_container_sas.sas-raw-forecast.sas
+  key_vault_id = azurerm_key_vault.kv.id
+  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
+}
+
+resource "azurerm_key_vault_secret" "secret-sas-raw-realtime" {
+  name         = "sas-raw-realtime"
+  value        = data.azurerm_storage_account_blob_container_sas.sas-raw-realtime.sas
+  key_vault_id = azurerm_key_vault.kv.id
+  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
+}
+
+resource "azurerm_key_vault_secret" "secret-sas-serve-forecast" {
+  name         = "sas-serve-forecast"
+  value        = data.azurerm_storage_account_blob_container_sas.sas-serve-forecast.sas
+  key_vault_id = azurerm_key_vault.kv.id
+  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
+}
+
+resource "azurerm_key_vault_secret" "secret-sas-serve-realtime" {
+  name         = "sas-serve-realtime"
+  value        = data.azurerm_storage_account_blob_container_sas.sas-serve-realtime.sas
+  key_vault_id = azurerm_key_vault.kv.id
+  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
+}
+
+# Databricks
 
 resource "azurerm_databricks_workspace" "dbw" {
   name                        = "dbw-weather-project"
@@ -267,6 +269,7 @@ resource "azurerm_databricks_workspace" "dbw" {
   managed_resource_group_name = "rg-managed-weather-project"
 }
 
+## Secret Scope
 resource "databricks_secret_scope" "db-secret-scope" {
   name = "secret-scope-weather-project"
 
@@ -278,8 +281,6 @@ resource "databricks_secret_scope" "db-secret-scope" {
   depends_on = [azurerm_key_vault_access_policy.kv-access-storage]
 }
 
-
-
 ## Development Cluster - Single Node
 resource "databricks_cluster" "dbcluster" {
   cluster_name            = "cluster-weather-project"
@@ -288,7 +289,6 @@ resource "databricks_cluster" "dbcluster" {
   runtime_engine          = "STANDARD"
   num_workers             = 0
   autotermination_minutes = 10
-
 
   spark_conf = {
     "spark.databricks.cluster.profile" : "singleNode"
@@ -300,7 +300,7 @@ resource "databricks_cluster" "dbcluster" {
   }
 }
 
-# ## Development Notebook
+## Development Notebook
 resource "databricks_notebook" "dbnotebook" {
   language = "SCALA"
   content_base64 = base64encode(<<-EOT
@@ -311,7 +311,4 @@ resource "databricks_notebook" "dbnotebook" {
 }
 
 
-
-
-# # # Power BI
-# # Add later
+# Power BI - Add later
