@@ -36,9 +36,13 @@ Scala version 2.12
 
 To retrieve data from the API and to process data, jobs are used.  
 
-## Azure Managed Grafana
+## Databricks SQL Warehouse
 
-The dashboard will be delivered through Grafana.
+The processed data will be stoerd in SQL Warehouse  
+
+## Dashboard
+
+The dashboard will be Databricks SQL Dashboards  
 
 ## Azure Key Vault
 
