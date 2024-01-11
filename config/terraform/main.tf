@@ -8,6 +8,11 @@ terraform {
       source  = "databricks/databricks"
       version = "=1.33.0"
     }
+
+    grafana = {
+      source = "grafana/grafana"
+      version = "2.8.1"
+    }
   }
 
   backend "azurerm" {
@@ -30,18 +35,23 @@ provider "databricks" {
   host = azurerm_databricks_workspace.dbw.workspace_url
 }
 
+provider "grafana" {
+  url = var.grafana_instance_url
+  auth = var.grafana_auth
+}
+
 # Client config to retrieve sensitive values
 data "azurerm_client_config" "current" {
 }
 
 # Resource Group
-resource "azurerm_resource_group" "rg" {
-  name     = "rg-weather-project"
-  location = "westeurope"
-  tags = {
-    project = "weather"
-  }
-}
+# resource "azurerm_resource_group" "rg" {
+#   name     = "rg-weather-project"
+#   location = "westeurope"
+#   tags = {
+#     project = "weather"
+#   }
+# }
 
 # ## Budgets
 # resource "azurerm_consumption_budget_resource_group" "bdg" {
@@ -314,4 +324,7 @@ resource "azurerm_resource_group" "rg" {
 # }
 
 
-# # Power BI - Add later
+# Grafana
+resource "grafana_folder" "gf-folder" {
+  title = "weather-project"
+}
