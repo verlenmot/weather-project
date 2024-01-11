@@ -14,3 +14,11 @@ variable "ip2" {
 variable "alert-email" {
   default = ""
 }
+
+variable "grafana_instance_url" {
+  default = ""
+}
+
+variable "grafana_auth" {
+  default = ""
+}

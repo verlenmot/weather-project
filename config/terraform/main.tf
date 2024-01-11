@@ -8,6 +8,7 @@ terraform {
       source  = "databricks/databricks"
       version = "=1.33.0"
     }
+
   }
 
   backend "azurerm" {
@@ -30,11 +31,12 @@ provider "databricks" {
   host = azurerm_databricks_workspace.dbw.workspace_url
 }
 
+
 # Client config to retrieve sensitive values
 data "azurerm_client_config" "current" {
 }
 
-# Resource Group
+# # Resource Group
 resource "azurerm_resource_group" "rg" {
   name     = "rg-weather-project"
   location = "westeurope"
@@ -264,13 +266,13 @@ resource "azurerm_resource_group" "rg" {
 
 # # Databricks
 
-# resource "azurerm_databricks_workspace" "dbw" {
-#   name                        = "dbw-weather-project"
-#   location                    = "westeurope"
-#   resource_group_name         = azurerm_resource_group.rg.name
-#   sku                         = "premium"
-#   managed_resource_group_name = "rg-managed-weather-project"
-# }
+resource "azurerm_databricks_workspace" "dbw" {
+  name                        = "dbw-weather-project"
+  location                    = "westeurope"
+  resource_group_name         = azurerm_resource_group.rg.name
+  sku                         = "premium"
+  managed_resource_group_name = "rg-managed-weather-project"
+}
 
 # ## Secret Scope
 # resource "databricks_secret_scope" "db-secret-scope" {
@@ -313,5 +315,4 @@ resource "azurerm_resource_group" "rg" {
 #   path = "/Shared/notebook-weather-project.sc"
 # }
 
-
-# # Power BI - Add later
+# Warehouse
