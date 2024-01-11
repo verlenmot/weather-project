@@ -3,7 +3,7 @@ internal/
 **/*.tfstate*
 **/*.tfvars
 **/*.terraform*
-
+**/backend.config
 
 
 # Git files
