@@ -14,3 +14,19 @@ variable "ip2" {
 variable "alert-email" {
   default = ""
 }
+
+variable "backend_resource_group_name" {
+  default = ""
+}
+
+variable "backend_storage_account_name" {
+  default = ""
+}
+
+variable "backend_container_name" {
+  default = ""
+}
+
+variable "backend_key" {
+  default = ""
+}
