@@ -10,7 +10,7 @@ terraform {
     }
 
     grafana = {
-      source = "grafana/grafana"
+      source  = "grafana/grafana"
       version = "2.8.1"
     }
   }
@@ -36,7 +36,7 @@ provider "databricks" {
 }
 
 provider "grafana" {
-  url = var.grafana_instance_url
+  url  = var.grafana_instance_url
   auth = var.grafana_auth
 }
 
@@ -327,4 +327,13 @@ data "azurerm_client_config" "current" {
 # Grafana
 resource "grafana_folder" "gf-folder" {
   title = "weather-project"
+}
+
+resource "grafana_dashboard" "gf-dashboard" {
+  folder = grafana_folder.gf-folder.uid
+  config_json = jsonencode({
+    "title" : "My Dashboard",
+    "uid" : "my-dashboard-uid"
+    }
+  )
 }
