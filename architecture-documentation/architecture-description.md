@@ -36,9 +36,9 @@ Scala version 2.12
 
 To retrieve data from the API and to process data, jobs are used.  
 
-## Power BI
+## Azure Managed Grafana
 
-The dashboard will be delivered through Power BI.  
+The dashboard will be delivered through Grafana.
 
 ## Azure Key Vault
 

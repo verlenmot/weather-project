@@ -40,3 +40,9 @@ Two options I tried were VNET peering and VNET injection, but these were unneces
 I decided to remove the virtual network, subnets and service endpoints; I replaced these with adding "AzureServices" to the Bypass in network rules.  
 This way, the Storage and Key Vault services are only accessible with my client IP and Azure Databricks, without having to set up a special private network.  
 In the final application the IP rule will be removed, so that the application is more secure.  
+
+## Dashboard
+
+I first thought of using Power BI as dashboard.  
+However, due to complexity and integration with Fabric I replaced it with Grafana.  
+This reduces the complexity.  
