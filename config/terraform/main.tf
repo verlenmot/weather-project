@@ -9,10 +9,6 @@ terraform {
       version = "=1.33.0"
     }
 
-    grafana = {
-      source  = "grafana/grafana"
-      version = "2.8.1"
-    }
   }
 
   backend "azurerm" {
@@ -35,16 +31,12 @@ provider "databricks" {
   host = azurerm_databricks_workspace.dbw.workspace_url
 }
 
-provider "grafana" {
-  url  = var.grafana_instance_url
-  auth = var.grafana_auth
-}
 
 # Client config to retrieve sensitive values
 data "azurerm_client_config" "current" {
 }
 
-# Resource Group
+# # Resource Group
 resource "azurerm_resource_group" "rg" {
   name     = "rg-weather-project"
   location = "westeurope"
@@ -93,32 +85,32 @@ resource "azurerm_resource_group" "rg" {
 # }
 
 # # Storage Accounts & Containers
-resource "azurerm_storage_account" "storage-raw" {
-  name                      = "stweatherprojectraw"
-  location                  = "westeurope"
-  resource_group_name       = azurerm_resource_group.rg.name
-  account_kind              = "StorageV2"
-  account_tier              = "Standard"
-  account_replication_type  = "GRS"
-  is_hns_enabled            = true
-  enable_https_traffic_only = true
+# resource "azurerm_storage_account" "storage-raw" {
+#   name                      = "stweatherprojectraw"
+#   location                  = "westeurope"
+#   resource_group_name       = azurerm_resource_group.rg.name
+#   account_kind              = "StorageV2"
+#   account_tier              = "Standard"
+#   account_replication_type  = "GRS"
+#   is_hns_enabled            = true
+#   enable_https_traffic_only = true
 
-  network_rules {
-    default_action = "Deny"
-    ip_rules       = [var.ip, var.ip2]
-    bypass         = ["AzureServices"]
-  }
-}
+#   network_rules {
+#     default_action = "Deny"
+#     ip_rules       = [var.ip, var.ip2]
+#     bypass         = ["AzureServices"]
+#   }
+# }
 
-resource "azurerm_storage_container" "forecast-raw" {
-  name                 = "forecast"
-  storage_account_name = azurerm_storage_account.storage-raw.name
-}
+# resource "azurerm_storage_container" "forecast-raw" {
+#   name                 = "forecast"
+#   storage_account_name = azurerm_storage_account.storage-raw.name
+# }
 
-resource "azurerm_storage_container" "realtime-raw" {
-  name                 = "realtime"
-  storage_account_name = azurerm_storage_account.storage-raw.name
-}
+# resource "azurerm_storage_container" "realtime-raw" {
+#   name                 = "realtime"
+#   storage_account_name = azurerm_storage_account.storage-raw.name
+# }
 
 # resource "azurerm_storage_account" "storage-serve" {
 #   name                      = "stweatherprojectserve"
@@ -274,13 +266,13 @@ resource "azurerm_storage_container" "realtime-raw" {
 
 # # Databricks
 
-# resource "azurerm_databricks_workspace" "dbw" {
-#   name                        = "dbw-weather-project"
-#   location                    = "westeurope"
-#   resource_group_name         = azurerm_resource_group.rg.name
-#   sku                         = "premium"
-#   managed_resource_group_name = "rg-managed-weather-project"
-# }
+resource "azurerm_databricks_workspace" "dbw" {
+  name                        = "dbw-weather-project"
+  location                    = "westeurope"
+  resource_group_name         = azurerm_resource_group.rg.name
+  sku                         = "premium"
+  managed_resource_group_name = "rg-managed-weather-project"
+}
 
 # ## Secret Scope
 # resource "databricks_secret_scope" "db-secret-scope" {
@@ -323,22 +315,4 @@ resource "azurerm_storage_container" "realtime-raw" {
 #   path = "/Shared/notebook-weather-project.sc"
 # }
 
-
-# Grafana
-resource "grafana_folder" "gf-folder" {
-  title = "weather-project"
-}
-
-resource "grafana_dashboard" "gf-dashboard" {
-  folder = grafana_folder.gf-folder.uid
-  config_json = jsonencode({
-    "title" : "My Dashboard",
-    "uid" : "my-dashboard-uid"
-    }
-  )
-}
-
-resource "grafana_data_source" "gf-data-forecast" {
-  name = "forecast-data"
-  type = "azuredataexplorer"
-}
+# Warehouse
