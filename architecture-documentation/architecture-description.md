@@ -12,10 +12,9 @@ For real-time data, the API is called every 10 minutes.
 
 ## Azure Data Lake Storage Gen 2  
 
-The raw data will be ingested into an Azure Data Lake, both for processing and for archival.  
+The raw data will be ingested into an Azure Data Lake, for archival.  
 The files will be stored as Parquet format.  
 The forecast data and real-time data will be kept in separate directories.  
-The processed data is stored in a separate Azure Data Lake.  
 
 ## Spark on Databricks
 
@@ -48,7 +47,7 @@ The dashboard will be Databricks SQL Dashboards
 
 Azure Key Vault is used to contain the secret scope for Databricks.  
 
-Key Vault contains SAS tokens for storage containers (four in total)  
+Key Vault contains SAS tokens for storage containers (two in total)
 
 ## Azure Network Rules
 

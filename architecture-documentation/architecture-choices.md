@@ -43,7 +43,5 @@ In the final application the IP rule will be removed, so that the application is
 
 ## Dashboard
 
-I first thought of using Power BI as dashboard.  
-However, due to complexity and integration with Fabric I replaced it with Grafana.  
-This reduces the complexity.  
-Change to Power BI again, but without terraform.  
+I thought about using Power BI, Azure Managed Grafana and Grafana Cloud for dashboards.  
+I opted for Azure Databricks Dashboards as it is the least complex option and pairs well with Terraform.
