@@ -46,3 +46,4 @@ In the final application the IP rule will be removed, so that the application is
 I first thought of using Power BI as dashboard.  
 However, due to complexity and integration with Fabric I replaced it with Grafana.  
 This reduces the complexity.  
+Change to Power BI again, but without terraform.  

@@ -45,13 +45,13 @@ data "azurerm_client_config" "current" {
 }
 
 # Resource Group
-# resource "azurerm_resource_group" "rg" {
-#   name     = "rg-weather-project"
-#   location = "westeurope"
-#   tags = {
-#     project = "weather"
-#   }
-# }
+resource "azurerm_resource_group" "rg" {
+  name     = "rg-weather-project"
+  location = "westeurope"
+  tags = {
+    project = "weather"
+  }
+}
 
 # ## Budgets
 # resource "azurerm_consumption_budget_resource_group" "bdg" {
@@ -93,32 +93,32 @@ data "azurerm_client_config" "current" {
 # }
 
 # # Storage Accounts & Containers
-# resource "azurerm_storage_account" "storage-raw" {
-#   name                      = "stweatherprojectraw"
-#   location                  = "westeurope"
-#   resource_group_name       = azurerm_resource_group.rg.name
-#   account_kind              = "StorageV2"
-#   account_tier              = "Standard"
-#   account_replication_type  = "GRS"
-#   is_hns_enabled            = true
-#   enable_https_traffic_only = true
+resource "azurerm_storage_account" "storage-raw" {
+  name                      = "stweatherprojectraw"
+  location                  = "westeurope"
+  resource_group_name       = azurerm_resource_group.rg.name
+  account_kind              = "StorageV2"
+  account_tier              = "Standard"
+  account_replication_type  = "GRS"
+  is_hns_enabled            = true
+  enable_https_traffic_only = true
 
-#   network_rules {
-#     default_action = "Deny"
-#     ip_rules       = [var.ip, var.ip2]
-#     bypass         = ["AzureServices"]
-#   }
-# }
+  network_rules {
+    default_action = "Deny"
+    ip_rules       = [var.ip, var.ip2]
+    bypass         = ["AzureServices"]
+  }
+}
 
-# resource "azurerm_storage_container" "forecast-raw" {
-#   name                 = "forecast"
-#   storage_account_name = azurerm_storage_account.storage-raw.name
-# }
+resource "azurerm_storage_container" "forecast-raw" {
+  name                 = "forecast"
+  storage_account_name = azurerm_storage_account.storage-raw.name
+}
 
-# resource "azurerm_storage_container" "realtime-raw" {
-#   name                 = "realtime"
-#   storage_account_name = azurerm_storage_account.storage-raw.name
-# }
+resource "azurerm_storage_container" "realtime-raw" {
+  name                 = "realtime"
+  storage_account_name = azurerm_storage_account.storage-raw.name
+}
 
 # resource "azurerm_storage_account" "storage-serve" {
 #   name                      = "stweatherprojectserve"
@@ -336,4 +336,9 @@ resource "grafana_dashboard" "gf-dashboard" {
     "uid" : "my-dashboard-uid"
     }
   )
+}
+
+resource "grafana_data_source" "gf-data-forecast" {
+  name = "forecast-data"
+  type = "azuredataexplorer"
 }
