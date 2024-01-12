@@ -141,7 +141,7 @@ data "azurerm_storage_account_blob_container_sas" "sas-raw-forecast" {
 data "azurerm_storage_account_blob_container_sas" "sas-raw-realtime" {
   connection_string = azurerm_storage_account.storage-raw.primary_connection_string
   container_name    = azurerm_storage_container.realtime-raw.name
-
+ 
   start  = "2024-01-01T00:00:00+0000"
   expiry = "2024-12-20T00:00:00+0000"
 
@@ -194,8 +194,7 @@ resource "azurerm_key_vault_secret" "secret-sas-raw-realtime" {
   depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
 }
 
-# # # Databricks
-
+#  Databricks
 resource "azurerm_databricks_workspace" "dbw" {
   name                        = "dbw-weather-project"
   location                    = "westeurope"
@@ -220,71 +219,51 @@ resource "databricks_secret_scope" "db-secret-scope" {
   depends_on = [azurerm_key_vault_access_policy.kv-access-storage]
 }
 
-# # ## Development Cluster - Single Node
-# # resource "databricks_cluster" "dbcluster" {
-# #   cluster_name            = "cluster-weather-project"
-# #   spark_version           = "13.3.x-scala2.12"
-# #   node_type_id            = "Standard_D3_v2"
-# #   runtime_engine          = "STANDARD"
-# #   num_workers             = 0
-# #   autotermination_minutes = 10
+# Development Cluster - Single Node
+resource "databricks_cluster" "dbcluster" {
+  cluster_name            = "cluster-weather-project"
+  spark_version           = "13.3.x-scala2.12"
+  node_type_id            = "Standard_D3_v2"
+  runtime_engine          = "STANDARD"
+  num_workers             = 0
+  autotermination_minutes = 10
 
-# #   spark_conf = {
-# #     "spark.databricks.cluster.profile" : "singleNode"
-# #     "spark.master" : "local[*]"
-# #   }
+  spark_conf = {
+    "spark.databricks.cluster.profile" : "singleNode"
+    "spark.master" : "local[*]"
+  }
 
-# #   custom_tags = {
-# #     "ResourceClass" = "SingleNode"
-# #   }
-# # }
+  custom_tags = {
+    "ResourceClass" = "SingleNode"
+  }
+}
 
 # # ## Development Notebook
-# # resource "databricks_notebook" "dbnotebook" {
-# #   language = "SCALA"
-# #   content_base64 = base64encode(<<-EOT
+resource "databricks_notebook" "dbnotebook" {
+  language = "SCALA"
+  content_base64 = base64encode(<<-EOT
 
-# #   EOT
-# #   )
-# #   path = "/weather-project/notebook-weather-project.sc"
+  EOT
+  )
+  path = "/weather-project/notebook-weather-project.sc"
 
-# #   depends_on = [ databricks_directory.dbdirectory ]
-# # }
+  depends_on = [ databricks_directory.dbdirectory ]
+}
 
-# # # Warehouse
-
+# Warehouse
 
 resource "databricks_sql_endpoint" "dbwarehouse" {
   name = "warehouse-weather-project"
   cluster_size = "2X-Small"
   min_num_clusters = 1
   max_num_clusters = 1
-  auto_stop_mins = 10 # Warehouse stops as fast as possible
+  auto_stop_mins = 1 # Warehouse stops as fast as possible - Option only through API
   enable_photon = false
-  enable_serverless_compute = false # Enabling this involves complex firewall configuration
-  warehouse_type = "CLASSIC"
+  enable_serverless_compute = true # Enabling this involves complex firewall configuration
+  warehouse_type = "PRO"
 }
 
-# # data "databricks_current_user" "user_test" {
-# #   depends_on = [ azurerm_databricks_workspace.dbw ]
-# # }
-
-# # data "databricks_user" "drer" {
-# #   user_id = 
-# # }
-
-# # # resource "databricks_sql_dashboard" "dbdashboard" {
-# #   name = "dashboard-weather-project"
-# #   parent = "/weather-project"
-# # }
-
-# # resource "databricks_entitlements" "dbentitlement" {
-# #   user_id = data.databricks_current_user.user_test.id
-# #   workspace_access = true
-# #   databricks_sql_access = true
-# # }
-
-# # resource "databricks_sql_global_config" "this" {
-# #   data_access_config        = {}
-# #   enable_serverless_compute = true
-# # }
+resource "databricks_sql_dashboard" "dbdashboard" {
+  name = "dashboard-weather-project"
+  parent = "folders/${databricks_directory.dbdirectory.object_id}"
+}
