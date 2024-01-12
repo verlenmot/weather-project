@@ -44,4 +44,4 @@ In the final application the IP rule will be removed, so that the application is
 ## Dashboard
 
 I thought about using Power BI, Azure Managed Grafana and Grafana Cloud for dashboards.  
-I opted for Azure Databricks Dashboards as it is the least complex option and pairs well with Terraform.
+I opted for Azure Databricks Dashboards as it is the least complex option and pairs well with Terraform.  

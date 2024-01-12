@@ -1,8 +1,19 @@
-variable "subscription_id" {
-  description = "Subscription ID to be used"
-  default     = ""
-  type        = string
+variable "client_id" {
+  default = ""
 }
+
+variable "client_secret" {
+  default = ""
+}
+
+variable "tenant_id" {
+  default = ""
+}
+
+variable "subscription_id" {
+  default = ""
+}
+
 variable "ip" {
   default = ""
 }
@@ -15,10 +26,4 @@ variable "alert-email" {
   default = ""
 }
 
-variable "grafana_instance_url" {
-  default = ""
-}
 
-variable "grafana_auth" {
-  default = ""
-}
