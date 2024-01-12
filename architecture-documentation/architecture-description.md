@@ -37,11 +37,14 @@ To retrieve data from the API and to process data, jobs are used.
 
 ## Databricks SQL Warehouse
 
-The processed data will be stoerd in SQL Warehouse  
+The processed data will be stored in Databricks Serverless SQL Warehouse (SQL Endpoint)
+Although the DBU/hour costs are more expensive than a classic warehouse, the serverless warehouse stops after 1 minute compared to 10 minutes for classic.  
+It is also able to spin up within 6 seconds, compared to 5 minutes for the classic warehouse.  
+This reduces costs and reduces the latency of the dashboards: processed data can be served in near real-time.
 
 ## Dashboard
 
-The dashboard will be Databricks SQL Dashboards  
+The dashboard will be Databricks SQL Dashboards.
 
 ## Azure Key Vault
 
