@@ -43,18 +43,12 @@ provider "databricks" {
   azure_tenant_id     = var.tenant_id
 }
 
-
-# Client config to retrieve sensitive values
-data "azurerm_client_config" "current" {
-}
-
-# Random
-
+# Unique instance identifier
 resource "random_id" "instance" {
   byte_length = 4
 }
 
-# # Resource Group
+# Resource group
 resource "azurerm_resource_group" "rg" {
   name     = "rg-${var.project-name}-${random_id.instance.hex}"
   location = "westeurope"
@@ -63,6 +57,7 @@ resource "azurerm_resource_group" "rg" {
   }
 }
 
+# Databricks workspace
 resource "azurerm_databricks_workspace" "dbw" {
   name                        = "dbw-${var.project-name}-${random_id.instance.hex}"
   location                    = "westeurope"
@@ -109,8 +104,11 @@ module "keyvault" {
 
 module "setup" {
   source       = "./modules/databricks/setup"
-  rg_name      = azurerm_resource_group.rg.name
   project_name = var.project-name
   secret_kv    = module.keyvault.kv
 }
 
+module "compute" {
+  source       = "./modules/databricks/compute"
+  project_name = var.project-name
+}

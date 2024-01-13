@@ -1,6 +1,3 @@
-variable "rg_name" {
-}
-
 variable "project_name" {
 }
 
