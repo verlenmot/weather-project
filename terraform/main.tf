@@ -64,25 +64,6 @@ resource "azurerm_resource_group" "rg" {
 }
 
 # ## Budgets
-resource "azurerm_consumption_budget_resource_group" "bdg" {
-  name              = "bdg-${var.project-name}-${random_id.instance.hex}"
-  resource_group_id = azurerm_resource_group.rg.id
-
-  amount     = 5
-  time_grain = "Monthly"
-
-  time_period {
-    start_date = "2024-01-01T00:00:00Z"
-  }
-
-  notification {
-    enabled        = false
-    operator       = "EqualTo"
-    threshold      = 50.0
-    contact_emails = [var.alert-email]
-  }
-}
-
 # resource "azurerm_consumption_budget_resource_group" "bdg-managed" {
 #   name              = "bdg-managed-${var.project-name}-${random_id.instance.hex}"
 #   resource_group_id = azurerm_databricks_workspace.dbw.managed_resource_group_id
@@ -102,25 +83,41 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
 #   }
 # }
 
-module "storage" {
-  source           = "./modules/azure/storage"
-  rg_name          = azurerm_resource_group.rg.name
-  project_name     = var.project-name
-  project_instance = random_id.instance.hex
-  ip_exceptions    = var.ip_exceptions
+module "budget" {
+  count = 2
+  source      = "./modules/azure/budget"
+  rg_id          = azurerm_resource_group.rg.id
+  alert_email = var.alert-email
+  amount = [10, 30][count.index]
 }
 
-module "keyvault" {
-  source           = "./modules/azure/keyvault"
-  rg_name          = azurerm_resource_group.rg.name
-  project_name     = var.project-name
-  project_instance = random_id.instance.hex
-  ip_exceptions    = var.ip_exceptions
-  sas_keys = {
-    forecast = module.storage.sas_forecast
-    realtime = module.storage.sas_realtime
-  }
-}
+# module "budget" {
+#   count = 2
+#   source      = "./modules/azure/budget"
+#   rg_id          = azurerm_databricks_workspace.dbw.managed_resource_group_name.id
+#   alert_email = var.alert-email
+#   amount = [10, 30][count.index]
+# }
+
+# module "storage" {
+#   source           = "./modules/azure/storage"
+#   rg_name          = azurerm_resource_group.rg.name
+#   project_name     = var.project-name
+#   project_instance = random_id.instance.hex
+#   ip_exceptions    = var.ip_exceptions
+# }
+
+# module "keyvault" {
+#   source           = "./modules/azure/keyvault"
+#   rg_name          = azurerm_resource_group.rg.name
+#   project_name     = var.project-name
+#   project_instance = random_id.instance.hex
+#   ip_exceptions    = var.ip_exceptions
+#   sas_keys = {
+#     forecast = module.storage.sas_forecast
+#     realtime = module.storage.sas_realtime
+#   }
+# }
 
 # #  Databricks
 # resource "azurerm_databricks_workspace" "dbw" {
