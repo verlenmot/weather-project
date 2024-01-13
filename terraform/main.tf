@@ -50,13 +50,13 @@ data "azurerm_client_config" "current" {
 
 # Random
 
-resource "random_id" "identifier" {
+resource "random_id" "instance" {
   byte_length = 4
 }
 
 # # Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-${var.project-name}-${random_id.identifier.hex}"
+  name     = "rg-${var.project-name}-${random_id.instance.hex}"
   location = "westeurope"
   tags = {
     project = "weather"
@@ -65,7 +65,7 @@ resource "azurerm_resource_group" "rg" {
 
 # ## Budgets
 resource "azurerm_consumption_budget_resource_group" "bdg" {
-  name              = "bdg-${var.project-name}-${random_id.identifier.hex}"
+  name              = "bdg-${var.project-name}-${random_id.instance.hex}"
   resource_group_id = azurerm_resource_group.rg.id
 
   amount     = 5
@@ -84,7 +84,7 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
 }
 
 # resource "azurerm_consumption_budget_resource_group" "bdg-managed" {
-#   name              = "bdg-managed-${var.project-name}-${random_id.identifier.hex}"
+#   name              = "bdg-managed-${var.project-name}-${random_id.instance.hex}"
 #   resource_group_id = azurerm_databricks_workspace.dbw.managed_resource_group_id
 
 #   amount     = 5
@@ -104,75 +104,16 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
 
 module "storage" {
   source = "./modules/azure/storage"
+  rg_name = azurerm_resource_group.rg.name
+  project_name = var.project-name
+  project_instance = random_id.instance.hex
+  ip_exceptions = var.ip_exceptions
 }
 
-# Storage Accounts & Containers
-# resource "azurerm_storage_account" "storage-raw" {
-#   name                      = "st${var.project-name}${random_id.identifier.hex}"
-#   location                  = "westeurope"
-#   resource_group_name       = azurerm_resource_group.rg.name
-#   account_kind              = "StorageV2"
-#   account_tier              = "Standard"
-#   account_replication_type  = "GRS"
-#   is_hns_enabled            = true
-#   enable_https_traffic_only = true
-
-#   network_rules {
-#     default_action = "Deny"
-#     ip_rules       = var.ip_exceptions
-#     bypass         = ["AzureServices"]
-#   }
-# }
-
-# resource "azurerm_storage_container" "forecast-raw" {
-#   name                 = "forecast"
-#   storage_account_name = azurerm_storage_account.storage-raw.name
-# }
-
-# resource "azurerm_storage_container" "realtime-raw" {
-#   name                 = "realtime"
-#   storage_account_name = azurerm_storage_account.storage-raw.name
-# }
-
-# data "azurerm_storage_account_blob_container_sas" "sas-raw-forecast" {
-#   connection_string = azurerm_storage_account.storage-raw.primary_connection_string
-#   container_name    = azurerm_storage_container.forecast-raw.name
-
-#   start  = "2024-01-01T00:00:00+0000"
-#   expiry = "2024-12-20T00:00:00+0000"
-
-
-#   permissions {
-#     read   = true
-#     write  = false # Overwrite content of an existing blob
-#     delete = false # Delete blobs
-#     create = true  # Add new blobs
-#     list   = true  # List blobs
-#     add    = false # Append data to blob
-#   }
-# }
-
-# data "azurerm_storage_account_blob_container_sas" "sas-raw-realtime" {
-#   connection_string = azurerm_storage_account.storage-raw.primary_connection_string
-#   container_name    = azurerm_storage_container.realtime-raw.name
-
-#   start  = "2024-01-01T00:00:00+0000"
-#   expiry = "2024-12-20T00:00:00+0000"
-
-
-#   permissions {
-#     read   = true
-#     write  = false # Overwrite content of an existing blob
-#     delete = false # Delete blobs
-#     create = true  # Add new blobs
-#     list   = true  # List blobs
-#     add    = false # Append data to blob
-#   }
-# }
 
 # # Key vault
 # resource "azurerm_key_vault" "kv" {
-#   name                = "kv-${var.project-name}-${random_id.identifier.hex}"
+#   name                = "kv-${var.project-name}-${random_id.instance.hex}"
 #   location            = "westeurope"
 #   resource_group_name = azurerm_resource_group.rg.name
 #   sku_name            = "standard"
@@ -194,8 +135,8 @@ module "storage" {
 # }
 
 # #$ Secrets
-# resource "azurerm_key_vault_secret" "secret-sas-raw-forecast" {
-#   name         = "sas-raw-forecast"
+# resource "azurerm_key_vault_secret" "secret-sas-forecast" {
+#   name         = "sas-forecast"
 #   value        = data.azurerm_storage_account_blob_container_sas.sas-raw-forecast.sas
 #   key_vault_id = azurerm_key_vault.kv.id
 #   depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
@@ -210,20 +151,20 @@ module "storage" {
 
 # #  Databricks
 # resource "azurerm_databricks_workspace" "dbw" {
-#   name                        = "dbw-${var.project-name}-${random_id.identifier.hex}"
+#   name                        = "dbw-${var.project-name}-${random_id.instance.hex}"
 #   location                    = "westeurope"
 #   resource_group_name         = azurerm_resource_group.rg.name
 #   sku                         = "premium"
-#   managed_resource_group_name = "rg-managed-${random_id.identifier.hex}"
+#   managed_resource_group_name = "rg-managed-${random_id.instance.hex}"
 # }
 
 # resource "databricks_directory" "dbdirectory" {
-#   path = "/${var.project-name}-${random_id.identifier.hex}"
+#   path = "/${var.project-name}-${random_id.instance.hex}"
 # }
 
 # ## Secret Scope
 # resource "databricks_secret_scope" "db-secret-scope" {
-#   name = "scope-${var.project-name}-${random_id.identifier.hex}"
+#   name = "scope-${var.project-name}-${random_id.instance.hex}"
 
 #   keyvault_metadata {
 #     resource_id = azurerm_key_vault.kv.id
@@ -235,7 +176,7 @@ module "storage" {
 
 # # Development Cluster - Single Node
 # resource "databricks_cluster" "dbcluster" {
-#   cluster_name            = "cluster-${var.project-name}-${random_id.identifier.hex}"
+#   cluster_name            = "cluster-${var.project-name}-${random_id.instance.hex}"
 #   spark_version           = "13.3.x-scala2.12"
 #   node_type_id            = "Standard_D3_v2"
 #   runtime_engine          = "STANDARD"
@@ -259,7 +200,7 @@ module "storage" {
 
 #   EOT
 #   )
-#   path = "${databricks_directory.dbdirectory.path}/notebook-${var.project-name}-${random_id.identifier.hex}.sc"
+#   path = "${databricks_directory.dbdirectory.path}/notebook-${var.project-name}-${random_id.instance.hex}.sc"
 
 #   depends_on = [databricks_directory.dbdirectory]
 # }
@@ -267,7 +208,7 @@ module "storage" {
 # # Warehouse
 
 # resource "databricks_sql_endpoint" "dbwarehouse" {
-#   name                      = "warehouse-${var.project-name}-${random_id.identifier.hex}"
+#   name                      = "warehouse-${var.project-name}-${random_id.instance.hex}"
 #   cluster_size              = "2X-Small"
 #   min_num_clusters          = 1
 #   max_num_clusters          = 1
@@ -278,6 +219,6 @@ module "storage" {
 # }
 
 # resource "databricks_sql_dashboard" "dbdashboard" {
-#   name   = "dashboard-${var.project-name}-${random_id.identifier.hex}"
+#   name   = "dashboard-${var.project-name}-${random_id.instance.hex}"
 #   parent = "folders/${databricks_directory.dbdirectory.object_id}"
 # }

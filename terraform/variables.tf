@@ -31,4 +31,3 @@ variable "alert-email" {
 variable "project-name" {
   default = "weather"
 }
-
