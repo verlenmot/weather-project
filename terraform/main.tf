@@ -108,7 +108,13 @@ module "setup" {
   secret_kv    = module.keyvault.kv
 }
 
-module "compute" {
-  source       = "./modules/databricks/compute"
+# module "compute" {
+#   source       = "./modules/databricks/compute"
+#   project_name = var.project-name
+# }
+
+module "visualisation" {
+  source       = "./modules/databricks/visualisation"
   project_name = var.project-name
+  directory = module.setup.directory
 }
