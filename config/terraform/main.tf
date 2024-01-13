@@ -34,9 +34,9 @@ provider "azurerm" {
 provider "databricks" {
   host = azurerm_databricks_workspace.dbw.workspace_url
 
-  azure_client_id = var.client_id
+  azure_client_id     = var.client_id
   azure_client_secret = var.client_secret
-  azure_tenant_id = var.tenant_id
+  azure_tenant_id     = var.tenant_id
 }
 
 
@@ -53,7 +53,7 @@ resource "azurerm_resource_group" "rg" {
   }
 }
 
-## Budgets
+# ## Budgets
 resource "azurerm_consumption_budget_resource_group" "bdg" {
   name              = "bdg-weather-project"
   resource_group_id = azurerm_resource_group.rg.id
@@ -141,7 +141,7 @@ data "azurerm_storage_account_blob_container_sas" "sas-raw-forecast" {
 data "azurerm_storage_account_blob_container_sas" "sas-raw-realtime" {
   connection_string = azurerm_storage_account.storage-raw.primary_connection_string
   container_name    = azurerm_storage_container.realtime-raw.name
- 
+
   start  = "2024-01-01T00:00:00+0000"
   expiry = "2024-12-20T00:00:00+0000"
 
@@ -214,8 +214,8 @@ resource "databricks_secret_scope" "db-secret-scope" {
   keyvault_metadata {
     resource_id = azurerm_key_vault.kv.id
     dns_name    = azurerm_key_vault.kv.vault_uri
-#   }
-}
+    #   }
+  }
   depends_on = [azurerm_key_vault_access_policy.kv-access-storage]
 }
 
@@ -247,23 +247,23 @@ resource "databricks_notebook" "dbnotebook" {
   )
   path = "/weather-project/notebook-weather-project.sc"
 
-  depends_on = [ databricks_directory.dbdirectory ]
+  depends_on = [databricks_directory.dbdirectory]
 }
 
 # Warehouse
 
 resource "databricks_sql_endpoint" "dbwarehouse" {
-  name = "warehouse-weather-project"
-  cluster_size = "2X-Small"
-  min_num_clusters = 1
-  max_num_clusters = 1
-  auto_stop_mins = 1 # Warehouse stops as fast as possible - Option only through API
-  enable_photon = false
+  name                      = "warehouse-weather-project"
+  cluster_size              = "2X-Small"
+  min_num_clusters          = 1
+  max_num_clusters          = 1
+  auto_stop_mins            = 1 # Warehouse stops as fast as possible - Option only through API
+  enable_photon             = false
   enable_serverless_compute = true # Enabling this involves complex firewall configuration
-  warehouse_type = "PRO"
+  warehouse_type            = "PRO"
 }
 
 resource "databricks_sql_dashboard" "dbdashboard" {
-  name = "dashboard-weather-project"
+  name   = "dashboard-weather-project"
   parent = "folders/${databricks_directory.dbdirectory.object_id}"
 }
