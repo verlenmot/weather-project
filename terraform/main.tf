@@ -103,51 +103,24 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
 # }
 
 module "storage" {
-  source = "./modules/azure/storage"
-  rg_name = azurerm_resource_group.rg.name
-  project_name = var.project-name
+  source           = "./modules/azure/storage"
+  rg_name          = azurerm_resource_group.rg.name
+  project_name     = var.project-name
   project_instance = random_id.instance.hex
-  ip_exceptions = var.ip_exceptions
+  ip_exceptions    = var.ip_exceptions
 }
 
-
-# # Key vault
-# resource "azurerm_key_vault" "kv" {
-#   name                = "kv-${var.project-name}-${random_id.instance.hex}"
-#   location            = "westeurope"
-#   resource_group_name = azurerm_resource_group.rg.name
-#   sku_name            = "standard"
-#   tenant_id           = data.azurerm_client_config.current.tenant_id
-
-#   network_acls {
-#     default_action = "Deny"
-#     ip_rules       = var.ip_exceptions
-#     bypass         = "AzureServices"
-
-#   }
-# }
-# resource "azurerm_key_vault_access_policy" "kv-access-storage" {
-#   key_vault_id = azurerm_key_vault.kv.id
-#   tenant_id    = data.azurerm_client_config.current.tenant_id
-#   object_id    = data.azurerm_client_config.current.object_id
-
-#   secret_permissions = ["Get", "Set", "List", "Delete", "Purge"]
-# }
-
-# #$ Secrets
-# resource "azurerm_key_vault_secret" "secret-sas-forecast" {
-#   name         = "sas-forecast"
-#   value        = data.azurerm_storage_account_blob_container_sas.sas-raw-forecast.sas
-#   key_vault_id = azurerm_key_vault.kv.id
-#   depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
-# }
-
-# resource "azurerm_key_vault_secret" "secret-sas-raw-realtime" {
-#   name         = "sas-raw-realtime"
-#   value        = data.azurerm_storage_account_blob_container_sas.sas-raw-realtime.sas
-#   key_vault_id = azurerm_key_vault.kv.id
-#   depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
-# }
+module "keyvault" {
+  source           = "./modules/azure/keyvault"
+  rg_name          = azurerm_resource_group.rg.name
+  project_name     = var.project-name
+  project_instance = random_id.instance.hex
+  ip_exceptions    = var.ip_exceptions
+  sas_keys = {
+    forecast = module.storage.sas_forecast
+    realtime = module.storage.sas_realtime
+  }
+}
 
 # #  Databricks
 # resource "azurerm_databricks_workspace" "dbw" {
