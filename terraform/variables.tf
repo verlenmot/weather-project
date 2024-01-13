@@ -18,12 +18,7 @@ variable "subscription_id" {
   sensitive = true
 }
 
-variable "ip" {
-  default   = ""
-  sensitive = true
-}
-
-variable "ip2" {
+variable "ip_exceptions" {
   default   = ""
   sensitive = true
 }
