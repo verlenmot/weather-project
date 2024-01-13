@@ -23,11 +23,11 @@ variable "ip_exceptions" {
   sensitive = true
 }
 
-variable "alert-email" {
+variable "alert_email" {
   default   = ""
   sensitive = true
 }
 
-variable "project-name" {
+variable "project_name" {
   default = "weather"
 }

@@ -9,7 +9,7 @@ terraform {
 
 # Development Cluster - Single Node
 resource "databricks_cluster" "dbcluster" {
-  cluster_name            = "cluster-${var.project_name}}"
+  cluster_name            = "cluster-${var.project_name}"
   spark_version           = "13.3.x-scala2.12"
   node_type_id            = "Standard_D3_v2"
   runtime_engine          = "STANDARD"

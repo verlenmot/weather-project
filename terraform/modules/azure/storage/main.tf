@@ -1,4 +1,4 @@
-resource "azurerm_storage_account" "storage-raw" {
+resource "azurerm_storage_account" "storage_raw" {
   name                      = "st${var.project_name}${var.project_instance}"
   location                  = "westeurope"
   resource_group_name       = var.rg_name
@@ -15,19 +15,19 @@ resource "azurerm_storage_account" "storage-raw" {
   }
 }
 
-resource "azurerm_storage_container" "forecast-raw" {
+resource "azurerm_storage_container" "forecast_raw" {
   name                 = "forecast"
-  storage_account_name = azurerm_storage_account.storage-raw.name
+  storage_account_name = azurerm_storage_account.storage_raw.name
 }
 
-resource "azurerm_storage_container" "realtime-raw" {
+resource "azurerm_storage_container" "realtime_raw" {
   name                 = "realtime"
-  storage_account_name = azurerm_storage_account.storage-raw.name
+  storage_account_name = azurerm_storage_account.storage_raw.name
 }
 
-data "azurerm_storage_account_blob_container_sas" "sas-raw-forecast" {
-  connection_string = azurerm_storage_account.storage-raw.primary_connection_string
-  container_name    = azurerm_storage_container.forecast-raw.name
+data "azurerm_storage_account_blob_container_sas" "sas_raw_forecast" {
+  connection_string = azurerm_storage_account.storage_raw.primary_connection_string
+  container_name    = azurerm_storage_container.forecast_raw.name
 
   start  = "2024-01-01T00:00:00+0000"
   expiry = "2024-12-20T00:00:00+0000"
@@ -43,9 +43,9 @@ data "azurerm_storage_account_blob_container_sas" "sas-raw-forecast" {
   }
 }
 
-data "azurerm_storage_account_blob_container_sas" "sas-raw-realtime" {
-  connection_string = azurerm_storage_account.storage-raw.primary_connection_string
-  container_name    = azurerm_storage_container.realtime-raw.name
+data "azurerm_storage_account_blob_container_sas" "sas_raw_realtime" {
+  connection_string = azurerm_storage_account.storage_raw.primary_connection_string
+  container_name    = azurerm_storage_container.realtime_raw.name
 
   start  = "2024-01-01T00:00:00+0000"
   expiry = "2024-12-20T00:00:00+0000"

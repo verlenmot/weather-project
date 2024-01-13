@@ -43,49 +43,32 @@ provider "databricks" {
   azure_tenant_id     = var.tenant_id
 }
 
-# Unique instance identifier
+# Unique instance generator
 resource "random_id" "instance" {
   byte_length = 4
 }
 
-# Resource group
+# Azure
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-${var.project-name}-${random_id.instance.hex}"
+  name     = "rg-${var.project_name}-${random_id.instance.hex}"
   location = "westeurope"
   tags = {
     project = "weather"
   }
 }
 
-# Databricks workspace
-resource "azurerm_databricks_workspace" "dbw" {
-  name                        = "dbw-${var.project-name}-${random_id.instance.hex}"
-  location                    = "westeurope"
-  resource_group_name         = azurerm_resource_group.rg.name
-  sku                         = "premium"
-  managed_resource_group_name = "rg-managed-${var.project-name}-${random_id.instance.hex}"
+module "budget_az" {
+  count       = 2
+  source      = "./modules/azure/budget"
+  rg_id       = azurerm_resource_group.rg.id
+  alert_email = var.alert_email
+  amount      = [10, 30][count.index]
 }
-
-# module "budget" {
-#   count = 2
-#   source      = "./modules/azure/budget"
-#   rg_id          = azurerm_resource_group.rg.id
-#   alert_email = var.alert-email
-#   amount = [10, 30][count.index]
-# }
-
-# module "budget" {
-#   count = 2
-#   source      = "./modules/azure/budget"
-#   rg_id          = azurerm_databricks_workspace.dbw.managed_resource_group_name.id
-#   alert_email = var.alert-email
-#   amount = [10, 30][count.index]
-# }
 
 module "storage" {
   source           = "./modules/azure/storage"
   rg_name          = azurerm_resource_group.rg.name
-  project_name     = var.project-name
+  project_name     = var.project_name
   project_instance = random_id.instance.hex
   ip_exceptions    = var.ip_exceptions
 }
@@ -93,7 +76,7 @@ module "storage" {
 module "keyvault" {
   source           = "./modules/azure/keyvault"
   rg_name          = azurerm_resource_group.rg.name
-  project_name     = var.project-name
+  project_name     = var.project_name
   project_instance = random_id.instance.hex
   ip_exceptions    = var.ip_exceptions
   sas_keys = {
@@ -102,19 +85,36 @@ module "keyvault" {
   }
 }
 
+# Databricks 
+resource "azurerm_databricks_workspace" "dbw" {
+  name                        = "dbw-${var.project_name}-${random_id.instance.hex}"
+  location                    = "westeurope"
+  resource_group_name         = azurerm_resource_group.rg.name
+  sku                         = "premium"
+  managed_resource_group_name = "rg-managed-${var.project_name}-${random_id.instance.hex}"
+}
+
+module "budget_db" {
+  count       = 2
+  source      = "./modules/azure/budget"
+  rg_id       = azurerm_databricks_workspace.dbw.managed_resource_group_id
+  alert_email = var.alert_email
+  amount      = [10, 30][count.index]
+}
+
 module "setup" {
   source       = "./modules/databricks/setup"
-  project_name = var.project-name
+  project_name = var.project_name
   secret_kv    = module.keyvault.kv
 }
 
-# module "compute" {
-#   source       = "./modules/databricks/compute"
-#   project_name = var.project-name
-# }
+module "compute" {
+  source       = "./modules/databricks/compute"
+  project_name = var.project_name
+}
 
 module "visualisation" {
   source       = "./modules/databricks/visualisation"
-  project_name = var.project-name
-  directory = module.setup.directory
+  project_name = var.project_name
+  directory    = module.setup.directory
 }
