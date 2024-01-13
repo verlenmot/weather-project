@@ -26,4 +26,7 @@ variable "alert-email" {
   default = ""
 }
 
+variable "project-name" {
+  default = "weather"
+}
 

@@ -8,7 +8,11 @@ terraform {
       source  = "databricks/databricks"
       version = "=1.33.0"
     }
-
+    
+    random = {
+      source = "hashicorp/random"
+      version = "3.6.0"
+    }
   }
 
   backend "azurerm" {
@@ -44,9 +48,15 @@ provider "databricks" {
 data "azurerm_client_config" "current" {
 }
 
+# Random
+
+resource "random_id" "identifier" {
+  byte_length = 4
+}
+
 # # Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-weather-project"
+  name     = "rg-${var.project-name}-${random_id.identifier.hex}"
   location = "westeurope"
   tags = {
     project = "weather"
@@ -55,7 +65,7 @@ resource "azurerm_resource_group" "rg" {
 
 # ## Budgets
 resource "azurerm_consumption_budget_resource_group" "bdg" {
-  name              = "bdg-weather-project"
+  name              = "bdg-${var.project-name}-${random_id.identifier.hex}"
   resource_group_id = azurerm_resource_group.rg.id
 
   amount     = 5
@@ -74,7 +84,7 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
 }
 
 resource "azurerm_consumption_budget_resource_group" "bdg-managed" {
-  name              = "bdg-managed-weather-project"
+  name              = "bdg-managed-${var.project-name}-${random_id.identifier.hex}"
   resource_group_id = azurerm_databricks_workspace.dbw.managed_resource_group_id
 
   amount     = 5
@@ -94,7 +104,7 @@ resource "azurerm_consumption_budget_resource_group" "bdg-managed" {
 
 # Storage Accounts & Containers
 resource "azurerm_storage_account" "storage-raw" {
-  name                      = "stweatherprojectarchive"
+  name                      = "st${var.project-name}${random_id.identifier.hex}"
   location                  = "westeurope"
   resource_group_name       = azurerm_resource_group.rg.name
   account_kind              = "StorageV2"
@@ -158,7 +168,7 @@ data "azurerm_storage_account_blob_container_sas" "sas-raw-realtime" {
 
 # Key vault
 resource "azurerm_key_vault" "kv" {
-  name                = "kv-weather-project"
+  name                = "kv-${var.project-name}-${random_id.identifier.hex}"
   location            = "westeurope"
   resource_group_name = azurerm_resource_group.rg.name
   sku_name            = "standard"
@@ -196,20 +206,20 @@ resource "azurerm_key_vault_secret" "secret-sas-raw-realtime" {
 
 #  Databricks
 resource "azurerm_databricks_workspace" "dbw" {
-  name                        = "dbw-weather-project"
+  name                        = "dbw-${var.project-name}-${random_id.identifier.hex}"
   location                    = "westeurope"
   resource_group_name         = azurerm_resource_group.rg.name
   sku                         = "premium"
-  managed_resource_group_name = "rg-managed-weather-project"
+  managed_resource_group_name = "rg-managed-${random_id.identifier.hex}"
 }
 
 resource "databricks_directory" "dbdirectory" {
-  path = "/weather-project"
+  path = "/${var.project-name}-${random_id.identifier.hex}"
 }
 
 ## Secret Scope
 resource "databricks_secret_scope" "db-secret-scope" {
-  name = "secret-scope-weather-project"
+  name = "scope-${var.project-name}-${random_id.identifier.hex}"
 
   keyvault_metadata {
     resource_id = azurerm_key_vault.kv.id
@@ -221,7 +231,7 @@ resource "databricks_secret_scope" "db-secret-scope" {
 
 # Development Cluster - Single Node
 resource "databricks_cluster" "dbcluster" {
-  cluster_name            = "cluster-weather-project"
+  cluster_name            = "cluster-${var.project-name}-${random_id.identifier.hex}"
   spark_version           = "13.3.x-scala2.12"
   node_type_id            = "Standard_D3_v2"
   runtime_engine          = "STANDARD"
@@ -245,7 +255,7 @@ resource "databricks_notebook" "dbnotebook" {
 
   EOT
   )
-  path = "/weather-project/notebook-weather-project.sc"
+  path = "${databricks_directory.dbdirectory.path}/notebook-${var.project-name}-${random_id.identifier.hex}.sc"
 
   depends_on = [databricks_directory.dbdirectory]
 }
@@ -253,7 +263,7 @@ resource "databricks_notebook" "dbnotebook" {
 # Warehouse
 
 resource "databricks_sql_endpoint" "dbwarehouse" {
-  name                      = "warehouse-weather-project"
+  name                      = "warehouse-${var.project-name}-${random_id.identifier.hex}"
   cluster_size              = "2X-Small"
   min_num_clusters          = 1
   max_num_clusters          = 1
@@ -264,6 +274,6 @@ resource "databricks_sql_endpoint" "dbwarehouse" {
 }
 
 resource "databricks_sql_dashboard" "dbdashboard" {
-  name   = "dashboard-weather-project"
+  name   = "dashboard-${var.project-name}-${random_id.identifier.hex}"
   parent = "folders/${databricks_directory.dbdirectory.object_id}"
 }
