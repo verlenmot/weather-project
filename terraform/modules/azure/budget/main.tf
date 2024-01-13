@@ -2,7 +2,7 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
   name              = "bdg-${var.amount}"
   resource_group_id = var.rg_id
 
-  amount = var.amount
+  amount     = var.amount
   time_grain = "Monthly"
 
   time_period {
@@ -17,7 +17,7 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
     contact_emails = [var.alert_email]
   }
 
-    notification {
+  notification {
     enabled        = true
     operator       = "EqualTo"
     threshold_type = "Actual"
@@ -25,7 +25,7 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
     contact_emails = [var.alert_email]
   }
 
-      notification {
+  notification {
     enabled        = true
     operator       = "EqualTo"
     threshold_type = "Actual"
