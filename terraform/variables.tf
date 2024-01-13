@@ -1,29 +1,36 @@
 variable "client_id" {
-  default = ""
+  default   = ""
+  sensitive = true
 }
 
 variable "client_secret" {
-  default = ""
+  default   = ""
+  sensitive = true
 }
 
 variable "tenant_id" {
-  default = ""
+  default   = ""
+  sensitive = true
 }
 
 variable "subscription_id" {
-  default = ""
+  default   = ""
+  sensitive = true
 }
 
 variable "ip" {
-  default = ""
+  default   = ""
+  sensitive = true
 }
 
 variable "ip2" {
-  default = ""
+  default   = ""
+  sensitive = true
 }
 
 variable "alert-email" {
-  default = ""
+  default   = ""
+  sensitive = true
 }
 
 variable "project-name" {
