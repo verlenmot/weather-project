@@ -105,14 +105,9 @@ module "setup" {
   source       = "./modules/databricks/setup"
   project_name = var.project_name
   secret_kv    = module.keyvault.kv
-  notebooks = {
-    validation = "${var.scala_path}/validation.scala"
-    forecast_ingestion  = "${var.scala_path}/ForecastIngestion.scala"
-    realtime_ingestion  = "${var.scala_path}/RealtimeIngestion.scala"
-    archival   = "${var.scala_path}/archival.scala"
-    processing = "${var.scala_path}/processing.scala"
-    serving    = "${var.scala_path}/serving.scala"
-  }
+  # notebooks = {
+  #   development         = """
+  # }
 }
 
 module "compute" {
@@ -120,8 +115,8 @@ module "compute" {
   project_name = var.project_name
 }
 
-# module "visualisation" {
-#   source       = "./modules/databricks/visualisation"
-#   project_name = var.project_name
-#   directory    = module.setup.directory
-# }
+module "visualisation" {
+  source       = "./modules/databricks/visualisation"
+  project_name = var.project_name
+  directory    = module.setup.directory
+}

@@ -5,6 +5,6 @@ variable "secret_kv" {
   sensitive = true
 }
 
-variable "notebooks" {
-  type = map(string)
-}
+# variable "notebooks" {
+#   type = map(string)
+# }

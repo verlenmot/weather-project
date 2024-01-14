@@ -24,12 +24,12 @@ resource "databricks_directory" "dbdirectory" {
   path = "/${var.project_name}"
 }
 
-# Development Notebook
-resource "databricks_notebook" "dbnotebook" {
-  for_each = var.notebooks
-  language = "SCALA"
-  source   = each.value
-  path     = "${databricks_directory.dbdirectory.path}/notebook-${var.project_name}-${each.key}.sc"
+# # Development Notebook
+# resource "databricks_notebook" "dbnotebook" {
+#   for_each = var.notebooks
+#   language = "SQL"
+#   source   = each.value
+#   path     = "${databricks_directory.dbdirectory.path}/notebook-${var.project_name}-${each.key}.sql"
 
-  depends_on = [databricks_directory.dbdirectory]
-}
+#   depends_on = [databricks_directory.dbdirectory]
+# }
