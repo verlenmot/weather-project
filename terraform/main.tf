@@ -109,15 +109,15 @@ module "setup" {
     validation = "${var.scala_path}/validation.scala"
     ingestion  = "${var.scala_path}/ingestion.scala"
     archival   = "${var.scala_path}/archival.scala"
-    processing = "${var.scala_path}/scala/processing.scala"
-    serving    = "${var.scala_path}/scala/serving.scala"
+    processing = "${var.scala_path}/processing.scala"
+    serving    = "${var.scala_path}/serving.scala"
   }
 }
 
-# module "compute" {
-#   source       = "./modules/databricks/compute"
-#   project_name = var.project_name
-# }
+module "compute" {
+  source       = "./modules/databricks/compute"
+  project_name = var.project_name
+}
 
 # module "visualisation" {
 #   source       = "./modules/databricks/visualisation"
