@@ -26,8 +26,17 @@ resource "databricks_cluster" "dbcluster" {
   }
 }
 
+resource "databricks_library" "dblibrary" {
+  for_each = {
+    sparksql = "org.apache.spark:spark-sql_2.12:3.4.1"
+  }
 
+  cluster_id = databricks_cluster.dbcluster.cluster_id
 
+  maven {
+    coordinates = each.value
+  }
+}
 # Warehouse
 resource "databricks_sql_endpoint" "dbwarehouse" {
   name                      = "warehouse-${var.project_name}"
