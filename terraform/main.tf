@@ -64,53 +64,56 @@ module "budget_az" {
   amount_array = [10, 30]
 }
 
-# module "storage" {
-#   source           = "./modules/azure/storage"
-#   rg_name          = azurerm_resource_group.rg.name
-#   project_name     = var.project_name
-#   project_instance = random_id.instance.hex
-#   ip_exceptions    = var.ip_exceptions
-# }
+module "storage" {
+  source           = "./modules/azure/storage"
+  rg_name          = azurerm_resource_group.rg.name
+  project_name     = var.project_name
+  project_instance = random_id.instance.hex
+  ip_exceptions    = var.ip_exceptions
+}
 
-# module "keyvault" {
-#   source           = "./modules/azure/keyvault"
-#   rg_name          = azurerm_resource_group.rg.name
-#   project_name     = var.project_name
-#   project_instance = random_id.instance.hex
-#   ip_exceptions    = var.ip_exceptions
-#   secrets = {
-#     forecast = module.storage.sas_forecast
-#     realtime = module.storage.sas_realtime
-#     api      = var.api_key
-#   }
-# }
+module "keyvault" {
+  source           = "./modules/azure/keyvault"
+  rg_name          = azurerm_resource_group.rg.name
+  project_name     = var.project_name
+  project_instance = random_id.instance.hex
+  ip_exceptions    = var.ip_exceptions
+  secrets = {
+    forecast = module.storage.sas_forecast
+    realtime = module.storage.sas_realtime
+    api      = var.api_key
+  }
+}
 
 # Databricks 
-# resource "azurerm_databricks_workspace" "dbw" {
-#   name                        = "dbw-${var.project_name}-${random_id.instance.hex}"
-#   location                    = "westeurope"
-#   resource_group_name         = azurerm_resource_group.rg.name
-#   sku                         = "premium"
-#   managed_resource_group_name = "rg-managed-${var.project_name}-${random_id.instance.hex}"
-# }
+resource "azurerm_databricks_workspace" "dbw" {
+  name                        = "dbw-${var.project_name}-${random_id.instance.hex}"
+  location                    = "westeurope"
+  resource_group_name         = azurerm_resource_group.rg.name
+  sku                         = "premium"
+  managed_resource_group_name = "rg-managed-${var.project_name}-${random_id.instance.hex}"
+}
 
-# module "budget_az" {
-#   source       = "./modules/azure/budget"
-#   rg_id        = azurerm_databricks_workspace.dbw.managed_resource_group_id
-#   alert_email  = var.alert_email
-#   amount_array = [10, 30]
-# }
+module "budget_db" {
+  source       = "./modules/azure/budget"
+  rg_id        = azurerm_databricks_workspace.dbw.managed_resource_group_id
+  alert_email  = var.alert_email
+  amount_array = [10, 30]
+}
 
-# module "setup" {
-#   source       = "./modules/databricks/setup"
-#   project_name = var.project_name
-#   secret_kv    = module.keyvault.kv
-# }
+module "setup" {
+  source       = "./modules/databricks/setup"
+  project_name = var.project_name
+  secret_kv    = module.keyvault.kv
+  notebooks = {
+    development = ""
+  }
+}
 
-# module "compute" {
-#   source       = "./modules/databricks/compute"
-#   project_name = var.project_name
-# }
+module "compute" {
+  source       = "./modules/databricks/compute"
+  project_name = var.project_name
+}
 
 # module "visualisation" {
 #   source       = "./modules/databricks/visualisation"

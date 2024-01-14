@@ -26,6 +26,8 @@ resource "databricks_cluster" "dbcluster" {
   }
 }
 
+
+
 # Warehouse
 resource "databricks_sql_endpoint" "dbwarehouse" {
   name                      = "warehouse-${var.project_name}"
