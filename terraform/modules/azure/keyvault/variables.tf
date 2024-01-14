@@ -11,6 +11,6 @@ variable "ip_exceptions" {
 }
 
 variable "secrets" {
-  type      = map(string)
+  type = map(string)
 
 }

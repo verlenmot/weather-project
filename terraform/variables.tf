@@ -36,3 +36,7 @@ variable "alert_email" {
 variable "project_name" {
   default = "weather"
 }
+
+variable "scala_path" {
+  default = "../scala"
+}

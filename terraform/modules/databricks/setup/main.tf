@@ -28,11 +28,8 @@ resource "databricks_directory" "dbdirectory" {
 resource "databricks_notebook" "dbnotebook" {
   for_each = var.notebooks
   language = "SCALA"
-  content_base64 = base64encode(<<-EOT
-  ${each.value}
-  EOT
-  )
-  path = "${databricks_directory.dbdirectory.path}/notebook-${var.project_name}-${each.key}.sc"
+  source   = each.value
+  path     = "${databricks_directory.dbdirectory.path}/notebook-${var.project_name}-${each.key}.sc"
 
   depends_on = [databricks_directory.dbdirectory]
 }
