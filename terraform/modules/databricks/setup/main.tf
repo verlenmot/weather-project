@@ -24,14 +24,12 @@ resource "databricks_directory" "dbdirectory" {
   path = "/${var.project_name}"
 }
 
-# Development Notebook
-resource "databricks_notebook" "dbnotebook" {
-  language = "SCALA"
-  content_base64 = base64encode(<<-EOT
+# # Development Notebook
+# resource "databricks_notebook" "dbnotebook" {
+#   for_each = var.notebooks
+#   language = "SQL"
+#   source   = each.value
+#   path     = "${databricks_directory.dbdirectory.path}/notebook-${var.project_name}-${each.key}.sql"
 
-  EOT
-  )
-  path = "${databricks_directory.dbdirectory.path}/notebook-${var.project_name}.sc"
-
-  depends_on = [databricks_directory.dbdirectory]
-}
+#   depends_on = [databricks_directory.dbdirectory]
+# }

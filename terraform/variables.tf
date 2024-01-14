@@ -18,6 +18,11 @@ variable "subscription_id" {
   sensitive = true
 }
 
+variable "api_key" {
+  default   = ""
+  sensitive = true
+}
+
 variable "ip_exceptions" {
   default   = ""
   sensitive = true
@@ -30,4 +35,8 @@ variable "alert_email" {
 
 variable "project_name" {
   default = "weather"
+}
+
+variable "scala_path" {
+  default = "../scala"
 }

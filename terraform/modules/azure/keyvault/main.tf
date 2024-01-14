@@ -24,16 +24,10 @@ resource "azurerm_key_vault_access_policy" "kv-access-storage" {
   secret_permissions = ["Get", "Set", "List", "Delete", "Purge"]
 }
 
-resource "azurerm_key_vault_secret" "secret-sas-forecast" {
-  name         = "sas-forecast"
-  value        = var.sas_keys["forecast"]
-  key_vault_id = azurerm_key_vault.kv.id
-  depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
-}
-
-resource "azurerm_key_vault_secret" "secret-sas-realtime" {
-  name         = "sas-realtime"
-  value        = var.sas_keys["realtime"]
+resource "azurerm_key_vault_secret" "secret" {
+  for_each     = var.secrets
+  name         = each.key
+  value        = each.value
   key_vault_id = azurerm_key_vault.kv.id
   depends_on   = [azurerm_key_vault_access_policy.kv-access-storage]
 }

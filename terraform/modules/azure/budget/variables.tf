@@ -5,5 +5,6 @@ variable "alert_email" {
   sensitive = true
 }
 
-variable "amount" {
+variable "amount_array" {
+  type = list(number)
 }
