@@ -29,6 +29,7 @@ resource "databricks_cluster" "dbcluster" {
 resource "databricks_library" "dblibrary" {
   for_each = {
     sparksql = "org.apache.spark:spark-sql_2.12:3.4.1"
+    requests-scala = "com.lihaoyi:requests_2.12:0.8.0"
   }
 
   cluster_id = databricks_cluster.dbcluster.cluster_id
