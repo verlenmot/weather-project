@@ -17,7 +17,8 @@ There are no maximum weekly or monthly limits.
 The limits are reset at midnight UTC.
 
 Data available for -6H in the past and beyond 4.5 days in the future.  
-Calls restricted to timesteps of 1 day, 1 hour or realtime.
+Forecast calls are restricted to timesteps of 1 hour, for the next 120 hours, our 1 day for the next 5 days.  
+Realtime changes every minute.
 
 ### Calls
 
@@ -28,6 +29,9 @@ Non precipitation forecast variables: once per hour.
 Non precipitation current conditions: every 5 minutes (to once per hour for more meaningful information).  
 Short term precipitation calling: every 15 minutes to once per hour.  
 Forecasts are run every 10 minutes on average.
+
+Time is represented in ISO 8601 format.  
+The timestamps are in UTC.  
 
 ### Interesting Data Fields
 
