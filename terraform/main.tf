@@ -107,7 +107,8 @@ module "setup" {
   secret_kv    = module.keyvault.kv
   notebooks = {
     validation = "${var.scala_path}/validation.scala"
-    ingestion  = "${var.scala_path}/ingestion.scala"
+    forecast_ingestion  = "${var.scala_path}/ForecastIngestion.scala"
+    realtime_ingestion  = "${var.scala_path}/RealtimeIngestion.scala"
     archival   = "${var.scala_path}/archival.scala"
     processing = "${var.scala_path}/processing.scala"
     serving    = "${var.scala_path}/serving.scala"
