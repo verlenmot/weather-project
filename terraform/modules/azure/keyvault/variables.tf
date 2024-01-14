@@ -12,5 +12,5 @@ variable "ip_exceptions" {
 
 variable "secrets" {
   type      = map(string)
-  sensitive = true
+
 }

@@ -1,8 +1,9 @@
 resource "azurerm_consumption_budget_resource_group" "bdg" {
-  name              = "bdg-${var.amount}"
+  count             = length(var.amount_array)
+  name              = "bdg-${var.amount_array[count.index]}"
   resource_group_id = var.rg_id
 
-  amount     = var.amount
+  amount     = var.amount_array[count.index]
   time_grain = "Monthly"
 
   time_period {
