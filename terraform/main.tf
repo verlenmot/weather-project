@@ -79,42 +79,43 @@ module "keyvault" {
   project_name     = var.project_name
   project_instance = random_id.instance.hex
   ip_exceptions    = var.ip_exceptions
-  sas_keys = {
+  secrets = {
     forecast = module.storage.sas_forecast
     realtime = module.storage.sas_realtime
+    api = var.api_key
   }
 }
 
 # Databricks 
-resource "azurerm_databricks_workspace" "dbw" {
-  name                        = "dbw-${var.project_name}-${random_id.instance.hex}"
-  location                    = "westeurope"
-  resource_group_name         = azurerm_resource_group.rg.name
-  sku                         = "premium"
-  managed_resource_group_name = "rg-managed-${var.project_name}-${random_id.instance.hex}"
-}
+# resource "azurerm_databricks_workspace" "dbw" {
+#   name                        = "dbw-${var.project_name}-${random_id.instance.hex}"
+#   location                    = "westeurope"
+#   resource_group_name         = azurerm_resource_group.rg.name
+#   sku                         = "premium"
+#   managed_resource_group_name = "rg-managed-${var.project_name}-${random_id.instance.hex}"
+# }
 
-module "budget_db" {
-  count       = 2
-  source      = "./modules/azure/budget"
-  rg_id       = azurerm_databricks_workspace.dbw.managed_resource_group_id
-  alert_email = var.alert_email
-  amount      = [10, 30][count.index]
-}
+# module "budget_db" {
+#   count       = 2
+#   source      = "./modules/azure/budget"
+#   rg_id       = azurerm_databricks_workspace.dbw.managed_resource_group_id
+#   alert_email = var.alert_email
+#   amount      = [10, 30][count.index]
+# }
 
-module "setup" {
-  source       = "./modules/databricks/setup"
-  project_name = var.project_name
-  secret_kv    = module.keyvault.kv
-}
+# module "setup" {
+#   source       = "./modules/databricks/setup"
+#   project_name = var.project_name
+#   secret_kv    = module.keyvault.kv
+# }
 
-module "compute" {
-  source       = "./modules/databricks/compute"
-  project_name = var.project_name
-}
+# module "compute" {
+#   source       = "./modules/databricks/compute"
+#   project_name = var.project_name
+# }
 
-module "visualisation" {
-  source       = "./modules/databricks/visualisation"
-  project_name = var.project_name
-  directory    = module.setup.directory
-}
+# module "visualisation" {
+#   source       = "./modules/databricks/visualisation"
+#   project_name = var.project_name
+#   directory    = module.setup.directory
+# }

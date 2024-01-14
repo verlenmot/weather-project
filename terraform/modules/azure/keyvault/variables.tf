@@ -10,7 +10,7 @@ variable "project_instance" {
 variable "ip_exceptions" {
 }
 
-variable "sas_keys" {
+variable "secrets" {
   type      = map(string)
   sensitive = true
 }

@@ -18,6 +18,11 @@ variable "subscription_id" {
   sensitive = true
 }
 
+variable "api_key" {
+  default   = ""
+  sensitive = true
+}
+
 variable "ip_exceptions" {
   default   = ""
   sensitive = true
