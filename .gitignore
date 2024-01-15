@@ -9,3 +9,8 @@ internal/
 # Git files
 **/.DS_Store
 
+# IntelliJ IDEA
+**/*.bsp
+**/*.idea
+**/target
+**/devConfig*
