@@ -13,4 +13,4 @@ internal/
 **/*.bsp
 **/*.idea
 **/target
-**/devConfig
+**/devConfig*
