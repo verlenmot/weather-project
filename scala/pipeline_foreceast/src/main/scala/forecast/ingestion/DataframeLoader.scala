@@ -131,7 +131,7 @@ object DataframeLoader extends sparkConfig.sparkProvider {
     )
 
     val testDF: DataFrame = spark.read.schema(forecastSchema).json(Seq(jsonString).toDS)
-    return testDF
+    testDF
   }
 
 
