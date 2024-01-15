@@ -1,8 +1,8 @@
 # Ingestion package
 
-Purpose: retrieve data from the API, perform validation, and ingest into a Spark Dataframe
+Purpose: retrieve data from the API, perform error handling, and ingest into a Spark Dataframe.
 
-## ApiConnectionForecast
+## ApiRequest (ApiConnectionForecast)
 
 Objective: connect to the API and retrieve data and metadata
 
@@ -10,7 +10,6 @@ Inputs:
 
 Location: String  
 ApiKey: String (from db.utils.get)
-Mode: String (forecast or realtime)
 
 Outputs:  
 
@@ -20,6 +19,15 @@ Status Code
 Status Message
 Request headers containing metadata
 
-## Validation  
+## ErrorHandler (StatusCheck)
 
 Objective: examine status code and decide whether to continue, exit or retry.  
+
+Inputs:  
+
+statusCode
+
+Output:  
+
+String containing either continue, stop or retry.
+
