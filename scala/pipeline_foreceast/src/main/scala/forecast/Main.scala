@@ -1,0 +1,5 @@
+package forecast
+
+object Main {
+
+}
