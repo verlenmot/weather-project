@@ -10,7 +10,7 @@ object DataframeEnricher {
     val adjustedTime: String = requestTime.drop(5)
 
     val enrichedDataFrame: DataFrame = dataFrame.withColumn("request_timestamp", to_timestamp(lit(adjustedTime), "dd MMM yyyy HH:mm:ss z"))
-    return enrichedDataFrame
-//    "Mon, 15 Jan 2024 11:04:51 GMT"
+
+    enrichedDataFrame
   }
 }
