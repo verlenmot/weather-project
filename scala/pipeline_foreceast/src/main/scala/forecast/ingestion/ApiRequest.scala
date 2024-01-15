@@ -19,7 +19,7 @@ object ApiRequest {
       "statusCode" -> statusCode,
       "statusMessage" -> statusMessage,
       "data" -> text,
-      "metadata" -> headers
+      "requestDateTime" -> headers("date")
     )
 
     return ApiOutput
