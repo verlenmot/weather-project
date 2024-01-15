@@ -14,7 +14,7 @@ object ErrorHandler {
       case 500 => "retry"
       case _ => "stop"
     }
-    return nextStep
+    nextStep
   }
   private def exceptionHandler(nextStep: String): Unit = {
     nextStep match {
