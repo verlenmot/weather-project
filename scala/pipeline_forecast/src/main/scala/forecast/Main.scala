@@ -1,6 +1,6 @@
 package forecast
 
-import forecast.processing.DataframeFlattener
+import forecast.processing
 import ingestion.ApiRequest
 import ingestion.ErrorHandler
 import ingestion.DataframeLoader
