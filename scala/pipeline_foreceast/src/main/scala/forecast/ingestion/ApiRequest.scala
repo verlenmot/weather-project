@@ -21,7 +21,8 @@ object ApiRequest {
       "data" -> text,
       "requestDateTime" -> headers("date")
     )
-
-    return ApiOutput
+    
+    ApiOutput
   }
+
 }
