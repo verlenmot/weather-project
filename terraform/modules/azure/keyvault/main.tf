@@ -13,8 +13,10 @@ resource "azurerm_key_vault" "kv" {
     default_action = "Deny"
     ip_rules       = var.ip_exceptions
     bypass         = "AzureServices"
-  }
-}
+    virtual_network_subnet_ids = var.subnet_ids
+    }
+    }
+
 
 resource "azurerm_key_vault_access_policy" "kv-access-storage" {
   key_vault_id = azurerm_key_vault.kv.id

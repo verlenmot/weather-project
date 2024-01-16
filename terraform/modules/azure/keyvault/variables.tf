@@ -10,6 +10,10 @@ variable "project_instance" {
 variable "ip_exceptions" {
 }
 
+variable "subnet_ids" {
+  
+}
+
 variable "secrets" {
   type = map(string)
 
