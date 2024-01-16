@@ -5,6 +5,7 @@ import ingestion.ApiRequest
 import ingestion.ErrorHandler
 import ingestion.DataframeLoader
 import processing.DataframeEnricher
+import archival.DataframeWriter
 
 
 object Main {
@@ -22,6 +23,8 @@ object Main {
     val enrichedTimeDataframe = DataframeEnricher.requestTimeAdd(nestedDataframe, apiData("requestDateTime").asInstanceOf[Seq[String]](0))
 
     enrichedTimeDataframe.show()
+
+//    DataframeWriter.storeDataframe(enrichedTimeDataframe) -> For Databricks
 
   }
 }
