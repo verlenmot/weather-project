@@ -1,12 +1,25 @@
 package forecast.processing
 
 import forecast.sparkConfig
-//object DataframeFlattener {
+object DataframeFlattener {
 
-//  import org.apache.spark.sql.DataFrame
-//  import org.apache.spark.sql.functions.explode
-//
-//  def flattenDataframe (nestedDF: DataFrame): DataFrame = {
-//    val stageOne = nestedDF.selectExpr("location.*", "timelines.*")
-//    return stageOne.select(explode($"daily"))
-//  }
+  import org.apache.spark.sql.DataFrame
+  import org.apache.spark.sql.functions._
+
+  def flattenDataframe(nestedDf: DataFrame, timestep: String): DataFrame = {
+    print(nestedDf.first())
+    val unpackedDf = nestedDf.selectExpr("location.*", "timelines.*")
+
+    val explodeDf = unpackedDf.select(
+      col("lat"),
+      col("lon"),
+      col("name"),
+      col("type"),
+      explode(col(timestep)).alias(s"${timestep}Forecast"))
+
+    val reducedDf = explodeDf.selectExpr("*", s"${timestep}Forecast.*").drop(s"${timestep}Forecast")
+
+    val completeDf = reducedDf.selectExpr("*", "values.*").drop("values")
+    completeDf
+  }
+}
