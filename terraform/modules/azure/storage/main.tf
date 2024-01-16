@@ -1,3 +1,5 @@
+
+
 resource "azurerm_storage_account" "storage_raw" {
   name                      = "st${var.project_name}${var.project_instance}"
   location                  = "westeurope"
@@ -11,7 +13,7 @@ resource "azurerm_storage_account" "storage_raw" {
   network_rules {
     default_action = "Deny"
     ip_rules       = var.ip_exceptions
-    bypass         = ["AzureServices"]
+    virtual_network_subnet_ids = var.subnet_ids
   }
 }
 
@@ -25,38 +27,37 @@ resource "azurerm_storage_container" "realtime_raw" {
   storage_account_name = azurerm_storage_account.storage_raw.name
 }
 
-data "azurerm_storage_account_blob_container_sas" "sas_raw_forecast" {
+data "azurerm_storage_account_sas" "sas_storage" {
   connection_string = azurerm_storage_account.storage_raw.primary_connection_string
-  container_name    = azurerm_storage_container.forecast_raw.name
 
-  start  = "2024-01-01T00:00:00+0000"
-  expiry = "2024-12-20T00:00:00+0000"
+  start  = "2024-01-16T14:00:01Z"
+  expiry = "2024-01-16T22:52:23Z"
+  signed_version = "2022-11-02"
 
-
-  permissions {
-    read   = true
-    write  = false # Overwrite content of an existing blob
-    delete = false # Delete blobs
-    create = true  # Add new blobs
-    list   = true  # List blobs
-    add    = false # Append data to blob
+    resource_types {
+    service   = false
+    container = true
+    object    = true
   }
-}
 
-data "azurerm_storage_account_blob_container_sas" "sas_raw_realtime" {
-  connection_string = azurerm_storage_account.storage_raw.primary_connection_string
-  container_name    = azurerm_storage_container.realtime_raw.name
-
-  start  = "2024-01-01T00:00:00+0000"
-  expiry = "2024-12-20T00:00:00+0000"
+  services {
+    blob  = true
+    queue = false
+    table = false
+    file  = false
+  }
 
 
   permissions {
     read   = true
-    write  = false # Overwrite content of an existing blob
+    write  = true # Overwrite content of an existing blob
     delete = false # Delete blobs
-    create = true  # Add new blobs
     list   = true  # List blobs
     add    = false # Append data to blob
+    create = true
+    update = false
+    process = false
+    tag = false
+    filter = false
   }
 }
