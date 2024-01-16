@@ -6,7 +6,7 @@ import ingestion.ErrorHandler
 import ingestion.DataframeLoader
 import processing.DataframeEnricher
 import archival.DataframeWriter
-
+import scala.io.Source
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -15,7 +15,8 @@ object Main {
     // val apiKey: String = dbutils.secrets.get(scope="scope-weather", key="api") -> Databricks
     // Temporary dev config
 //    val apiData: Map[String, Any] = ApiRequest.ApiConnectionForecast("amsterdam", devConfig.apiKey)
-    val apiData: Map[String, Any] = devConfig.mockData
+    val apiData: Map[String, Any] = devConfig.newMockData
+//    print(apiData)
 //    ErrorHandler.flow(apiData("statusCode").asInstanceOf[Int])
     val nestedDataframe = DataframeLoader.loadDataFrame(apiData("data").asInstanceOf[String])
 

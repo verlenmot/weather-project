@@ -6,7 +6,7 @@ object ApiRequest {
       "location" -> location,
       "apikey" -> apiKey,
       "units" -> "metric",
-      "timesteps" -> "1d"
+      "timesteps" -> "1d,1h"
     )
 
     val r: requests.Response = requests.get("https://api.tomorrow.io/v4/weather/forecast", params = paramMap)
