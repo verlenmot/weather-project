@@ -11,7 +11,7 @@ variable "ip_exceptions" {
 }
 
 variable "subnet_ids" {
-  
+
 }
 
 variable "secrets" {

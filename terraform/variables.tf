@@ -40,3 +40,7 @@ variable "project_name" {
 variable "scala_path" {
   default = "../scala"
 }
+
+variable "subnets" {
+  default = ""
+}

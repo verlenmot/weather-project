@@ -70,7 +70,7 @@ module "storage" {
   project_name     = var.project_name
   project_instance = random_id.instance.hex
   ip_exceptions    = var.ip_exceptions
-  subnet_ids = [azurerm_subnet.public.id, azurerm_subnet.private.id]
+  subnet_ids       = [module.vnet.private_subnet_id, module.vnet.public_subnet_id]
 }
 
 module "keyvault" {
@@ -79,112 +79,41 @@ module "keyvault" {
   project_name     = var.project_name
   project_instance = random_id.instance.hex
   ip_exceptions    = var.ip_exceptions
-  subnet_ids = [azurerm_subnet.public.id, azurerm_subnet.private.id]
-  
+  subnet_ids       = [module.vnet.private_subnet_id, module.vnet.public_subnet_id]
+
   secrets = {
     sas = module.storage.sas_storage
-    api      = var.api_key
+    api = var.api_key
   }
 }
 
-# # Databricks 
-
-# Virtual Network
-
-# resource "azurerm_subnet" "snet" {
-#   name                 = "snet-weather-project-main"
-#   resource_group_name  = azurerm_resource_group.rg.name
-#   virtual_network_name = azurerm_virtual_network.vnet.name
-#   address_prefixes     = ["10.0.0.0/24"]
-#   service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
-# }
-
-resource "azurerm_network_security_group" "this" {
-  name                = "nsg-weather-project"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = "westeurope"
+module "vnet" {
+  source           = "./modules/azure/vnet"
+  rg_name          = azurerm_resource_group.rg.name
+  project_name     = var.project_name
+  project_instance = random_id.instance.hex
+  subnets          = var.subnets
 }
 
-#####
-resource "azurerm_virtual_network" "vnet" {
-  name                = "vnet-weather-project"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  address_space       = ["10.0.0.0/16"]
-}
-
-
-resource "azurerm_subnet" "public" {
-  name                 = "snet-public"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.0.0/24"]
-  service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
-
-  delegation {
-    name = "databricks"
-    service_delegation {
-      name = "Microsoft.Databricks/workspaces"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/join/action",
-        "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
-      "Microsoft.Network/virtualNetworks/subnets/unprepareNetworkPolicies/action"]
-    }
-  }
-}
-
-resource "azurerm_subnet_network_security_group_association" "public" {
-  subnet_id                 = azurerm_subnet.public.id
-  network_security_group_id = azurerm_network_security_group.this.id
-}
-
-resource "azurerm_subnet" "private" {
-  name                 = "snet-private"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
-  service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
-
-
-  delegation {
-    name = "databricks"
-    service_delegation {
-      name = "Microsoft.Databricks/workspaces"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/join/action",
-        "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
-      "Microsoft.Network/virtualNetworks/subnets/unprepareNetworkPolicies/action"]
-    }
-  }
-}
-
-resource "azurerm_subnet_network_security_group_association" "private" {
-  subnet_id                 = azurerm_subnet.private.id
-  network_security_group_id = azurerm_network_security_group.this.id
-}
-
-###
+# Databricks 
 
 resource "azurerm_databricks_workspace" "dbw" {
-  name                = "dbw-${var.project_name}-${random_id.instance.hex}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = "westeurope"
-  sku                 = "premium"
+  name                        = "dbw-${var.project_name}-${random_id.instance.hex}"
+  resource_group_name         = azurerm_resource_group.rg.name
+  location                    = "westeurope"
+  sku                         = "premium"
   managed_resource_group_name = "rg-managed-${var.project_name}-${random_id.instance.hex}"
 
   custom_parameters {
     no_public_ip                                         = true
-    virtual_network_id                                   = azurerm_virtual_network.vnet.id
-    private_subnet_name                                  = azurerm_subnet.private.name
-    public_subnet_name                                   = azurerm_subnet.public.name
-    public_subnet_network_security_group_association_id  = azurerm_subnet_network_security_group_association.public.id
-    private_subnet_network_security_group_association_id = azurerm_subnet_network_security_group_association.private.id
+    virtual_network_id                                   = module.vnet.virtual_network_id
+    private_subnet_name                                  = module.vnet.private_subnet_name
+    public_subnet_name                                   = module.vnet.public_subnet_name
+    public_subnet_network_security_group_association_id  = module.vnet.public_association
+    private_subnet_network_security_group_association_id = module.vnet.private_association
   }
 
-  depends_on = [
-    azurerm_subnet_network_security_group_association.public,
-    azurerm_subnet_network_security_group_association.private
-  ]
+  depends_on = [module.vnet]
 }
 
 
