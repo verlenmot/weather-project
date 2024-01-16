@@ -14,3 +14,4 @@ internal/
 **/*.idea
 **/target
 **/devConfig*
+**/mockData*
