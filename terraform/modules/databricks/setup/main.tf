@@ -24,12 +24,8 @@ resource "databricks_directory" "dbdirectory" {
   path = "/${var.project_name}"
 }
 
-# # Development Notebook
-# resource "databricks_notebook" "dbnotebook" {
-#   for_each = var.notebooks
-#   language = "SQL"
-#   source   = each.value
-#   path     = "${databricks_directory.dbdirectory.path}/notebook-${var.project_name}-${each.key}.sql"
-
-#   depends_on = [databricks_directory.dbdirectory]
-# }
+# Jar files
+resource "databricks_dbfs_file" "forecast" {
+  source = var.forecast_source
+  path = "${databricks_directory.dbdirectory.path}/forecast.jar"
+}
