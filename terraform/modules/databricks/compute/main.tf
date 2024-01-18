@@ -20,3 +20,16 @@ resource "databricks_sql_endpoint" "dbwarehouse" {
 }
 
 
+# Cluster pool 
+
+resource "databricks_instance_pool" "dbpool" {
+  instance_pool_name                    = "Weather pool"
+  min_idle_instances                    = 0
+  max_capacity                          = 2
+  node_type_id                          = "Standard_D3_v2"
+  idle_instance_autotermination_minutes = 15
+  preloaded_spark_versions              = ["13.3.x-scala2.12"]
+  azure_attributes {
+    spot_bid_max_price = -1
+  }
+}
