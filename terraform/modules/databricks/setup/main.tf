@@ -27,5 +27,10 @@ resource "databricks_directory" "dbdirectory" {
 # Jar files
 resource "databricks_dbfs_file" "forecast" {
   source = var.forecast_source
-  path = "${databricks_directory.dbdirectory.path}/forecast.jar"
+  path   = "${databricks_directory.dbdirectory.path}/forecast.jar"
+}
+
+resource "databricks_dbfs_file" "realtime" {
+  source = var.realtime_source
+  path   = "${databricks_directory.dbdirectory.path}/realtime.jar"
 }
