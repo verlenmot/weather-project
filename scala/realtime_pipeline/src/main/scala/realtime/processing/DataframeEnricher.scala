@@ -1,17 +1,14 @@
 package realtime.processing
 
-object DataframeEnricher {
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions._
 
-  import org.apache.spark.sql.DataFrame
-  import org.apache.spark.sql.functions._
-  import org.apache.spark.sql.functions.udf
+object DataframeEnricher {
 
   def requestTimeAdd(dataFrame: DataFrame, requestTime: String): DataFrame = {
 
     val adjustedTime: String = requestTime.drop(5)
-    println(adjustedTime)
-    val enrichedDataFrame: DataFrame = dataFrame.withColumn("request_timestamp", to_timestamp(lit(adjustedTime), "dd MMM yyyy HH:mm:ss z"))
-    enrichedDataFrame.show()
+    val enrichedDataFrame: DataFrame = dataFrame.withColumn("timestamp", to_timestamp(lit(adjustedTime), "dd MMM yyyy HH:mm:ss z"))
     enrichedDataFrame
   }
 

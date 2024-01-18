@@ -1,12 +1,11 @@
 package realtime.ingestion
 
 import realtime.sparkConfig
-
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.types._
 object DataframeLoader extends sparkConfig.sparkProvider {
 
   import spark.implicits._
-  import org.apache.spark.sql.DataFrame
-  import org.apache.spark.sql.types._
 
   def loadDataFrame(jsonString: String): DataFrame = {
     val realtimeSchema = StructType(Seq(

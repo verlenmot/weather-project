@@ -1,14 +1,9 @@
 package realtime.sparkConfig
 
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
+import com.databricks.dbutils_v1.DBUtilsHolder.dbutils
 trait sparkProvider {
-
-
-  import org.apache.spark.SparkConf
-  import org.apache.spark.sql.SparkSession
-  import com.databricks.dbutils_v1.DBUtilsHolder.dbutils
-
-  val config = "test"
-  val accountKey = "test"
 
   val defaultConf = new SparkConf()
     .setAppName("weatherForecast")
@@ -21,9 +16,6 @@ trait sparkProvider {
     .set(s"fs.azure.account.auth.type.${dbutils.secrets.get(scope = "scope-weather", key = "storage")}.dfs.core.windows.net", "SAS")
     .set(s"fs.azure.sas.token.provider.type.${dbutils.secrets.get(scope = "scope-weather", key = "storage")}.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
     .set(s"fs.azure.sas.fixed.token.${dbutils.secrets.get(scope = "scope-weather", key = "storage")}.dfs.core.windows.net", dbutils.secrets.get(scope = "scope-weather", key = "sas"))
-
-  // Databricks storage config added at job cluster creation
-
 
     val conf = {
       if (defaultConf.contains("spark.master")) defaultConf
