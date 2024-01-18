@@ -1,6 +1,6 @@
 # Raw Data
 resource "azurerm_storage_account" "storage_raw" {
-  name                      = "str${var.project_name}${var.project_instance}"
+  name                      = "st${var.project_name}${var.project_instance}"
   location                  = "westeurope"
   resource_group_name       = var.rg_name
   account_kind              = "StorageV2"
