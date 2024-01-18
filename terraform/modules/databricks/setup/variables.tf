@@ -5,6 +5,11 @@ variable "secret_kv" {
   sensitive = true
 }
 
-# variable "notebooks" {
-#   type = map(string)
-# }
+variable "forecast_source" {
+  sensitive = true
+}
+
+variable "realtime_source" {
+  sensitive = true
+}
+

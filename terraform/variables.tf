@@ -40,3 +40,19 @@ variable "project_name" {
 variable "scala_path" {
   default = "../scala"
 }
+
+variable "forecast_source" {
+  default = ""
+}
+
+variable "realtime_source" {
+  default = ""
+}
+
+variable "subnets" {
+  default = ""
+}
+
+variable "city" {
+
+}

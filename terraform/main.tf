@@ -70,6 +70,7 @@ module "storage" {
   project_name     = var.project_name
   project_instance = random_id.instance.hex
   ip_exceptions    = var.ip_exceptions
+  subnet_ids       = [module.vnet.private_subnet_id, module.vnet.public_subnet_id]
 }
 
 module "keyvault" {
@@ -78,20 +79,41 @@ module "keyvault" {
   project_name     = var.project_name
   project_instance = random_id.instance.hex
   ip_exceptions    = var.ip_exceptions
+  subnet_ids       = [module.vnet.private_subnet_id, module.vnet.public_subnet_id]
+
   secrets = {
-    forecast = module.storage.sas_forecast
-    realtime = module.storage.sas_realtime
-    api      = var.api_key
+    sas     = module.storage.sas_storage
+    api     = var.api_key
+    storage = module.storage.storage_name
   }
+}
+
+module "vnet" {
+  source           = "./modules/azure/vnet"
+  rg_name          = azurerm_resource_group.rg.name
+  project_name     = var.project_name
+  project_instance = random_id.instance.hex
+  subnets          = var.subnets
 }
 
 # Databricks 
 resource "azurerm_databricks_workspace" "dbw" {
   name                        = "dbw-${var.project_name}-${random_id.instance.hex}"
-  location                    = "westeurope"
   resource_group_name         = azurerm_resource_group.rg.name
+  location                    = "westeurope"
   sku                         = "premium"
   managed_resource_group_name = "rg-managed-${var.project_name}-${random_id.instance.hex}"
+
+  custom_parameters {
+    no_public_ip                                         = true
+    virtual_network_id                                   = module.vnet.virtual_network_id
+    private_subnet_name                                  = module.vnet.private_subnet_name
+    public_subnet_name                                   = module.vnet.public_subnet_name
+    public_subnet_network_security_group_association_id  = module.vnet.public_association
+    private_subnet_network_security_group_association_id = module.vnet.private_association
+  }
+
+  depends_on = [module.vnet]
 }
 
 module "budget_db" {
@@ -102,12 +124,11 @@ module "budget_db" {
 }
 
 module "setup" {
-  source       = "./modules/databricks/setup"
-  project_name = var.project_name
-  secret_kv    = module.keyvault.kv
-  # notebooks = {
-  #   development         = """
-  # }
+  source          = "./modules/databricks/setup"
+  project_name    = var.project_name
+  secret_kv       = module.keyvault.kv
+  forecast_source = var.forecast_source
+  realtime_source = var.realtime_source
 }
 
 module "compute" {
@@ -115,8 +136,30 @@ module "compute" {
   project_name = var.project_name
 }
 
+module "job" {
+  source           = "./modules/databricks/job"
+  project_name     = var.project_name
+  project_instance = random_id.instance.hex
+  dev_email        = var.alert_email
+  warehouse_id     = module.compute.warehouse.id
+  query_map        = module.query.query_map
+  pool_id          = module.compute.pool_id
+  dashboard_id     = module.visualisation.dashboard_id
+  city             = var.city
+  depends_on       = [module.setup, module.compute, module.query]
+}
+
+module "query" {
+  source           = "./modules/databricks/query"
+  warehouse_id     = module.compute.warehouse.data_source_id
+  workspace_folder = module.setup.directory.object_id
+
+}
+
 module "visualisation" {
   source       = "./modules/databricks/visualisation"
   project_name = var.project_name
   directory    = module.setup.directory
+  query_map    = module.query.query_map
+  depends_on   = [module.query]
 }

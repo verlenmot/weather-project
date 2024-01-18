@@ -2,9 +2,11 @@
 
 Purpose: retrieve data from the API, perform error handling, and ingest into a Spark Dataframe.
 
-## ApiRequest (ApiConnectionForecast)
+## ApiRequest
 
-Objective: connect to the API and retrieve data and metadata
+### ApiConnectionForecast
+
+Objective: connect to the forecast API and retrieve necessary data and metadata
 
 Inputs:  
 
@@ -14,14 +16,16 @@ ApiKey: String (from db.utils.get)
 Outputs:  
 
 Map[String, Any] containing  
-JSON String containing data  
+JSON String containing forecast data  
 Status Code
 Status Message
-Request headers containing metadata
+API Request Timestamp
 
-## ErrorHandler (StatusCheck)
+## ErrorHandler
 
-Objective: examine status code and decide whether to continue, exit or retry.  
+### statusCheck
+
+Objective: examine status code and decide whether to continue, exit or retry depending on the code.  
 
 Inputs:  
 
@@ -31,3 +35,14 @@ Output:
 
 String containing either continue, stop or retry.
 
+### exceptionHandler
+
+Objective: throw an exception depending on the string (continue, stop, retry), so that the job stops.  
+
+Inputs:  
+
+String containing either continue, stop or retry.  
+
+Output:  
+
+None  

@@ -14,3 +14,7 @@ internal/
 **/*.idea
 **/target
 **/devConfig*
+**/mockData*
+**/out*
+**/resources*
+**/META-INF*

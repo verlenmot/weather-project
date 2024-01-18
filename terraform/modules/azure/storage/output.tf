@@ -1,9 +1,9 @@
-output "sas_forecast" {
-  value     = data.azurerm_storage_account_blob_container_sas.sas_raw_forecast.sas
+output "sas_storage" {
+  value     = data.azurerm_storage_account_sas.sas_storage.sas
   sensitive = true
 }
 
-output "sas_realtime" {
-  value     = data.azurerm_storage_account_blob_container_sas.sas_raw_realtime.sas
+output "storage_name" {
+  value     = azurerm_storage_account.storage_raw.name
   sensitive = true
 }
