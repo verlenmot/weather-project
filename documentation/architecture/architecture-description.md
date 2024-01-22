@@ -1,0 +1,68 @@
+# Architecture Description
+
+![Architecture Diagram](architecture-diagram.png)
+
+## API
+
+The API, Tomorrow.io responds with JSON format using REST API format.  
+For forecast data, the API is called every hour.  
+For real-time data, the API is called every 10 minutes.
+
+[API documentation](API-documentation.md)
+
+## Azure Data Lake Storage Gen 2  
+
+The raw data will be ingested into an Azure Data Lake, for archival.  
+The files will be stored as Parquet format.  
+The forecast data and real-time data will be kept in separate directories.  
+
+## Spark on Databricks
+
+Spark clusters on Databricks are used to process the data.
+Although the API data is low volume, this application has scalability in mind.  
+The processing part should be able to handle a lot of different API calls.
+
+Databricks runtime 13.3 LTS, standard
+Spark Version 3.4.1
+Development cluster: Single node Standard_DS3_v2
+
+## Scala code
+
+Scala code is written for API data retrieval and for Spark processing.  
+Scala version 2.12
+
+## Orchestration
+
+To retrieve data from the API and to process data, jobs are used.  
+
+## Databricks SQL Warehouse
+
+The processed data will be stored in Databricks Serverless SQL Warehouse (SQL Endpoint)
+Although the DBU/hour costs are more expensive than a classic warehouse, the serverless warehouse stops after 1 minute compared to 10 minutes for classic.  
+It is also able to spin up within 6 seconds, compared to 5 minutes for the classic warehouse.  
+This reduces costs and reduces the latency of the dashboards: processed data can be served in near real-time.
+
+## Dashboard
+
+The dashboard will be Databricks SQL Dashboards.
+
+## Azure Key Vault
+
+Azure Key Vault is used to contain the secret scope for Databricks.  
+
+Key Vault contains SAS tokens for storage containers (two in total)
+
+## Azure Network Rules
+
+The Azure Storage Accounts and Azure Key Vault have network rules that deny all access unless it comes from trusted Microsoft Services.
+
+## Terraform
+
+The infrastructure for the application is automatically created with Terraform.  
+While developing, the backend is local.
+The final backend configuration will be azurerm, this ensures security of infrastructure.
+
+## Docker
+
+The application is delivered as a Dockerfile.  
+In this way, complexity of trying out the application is kept to a minimum.
