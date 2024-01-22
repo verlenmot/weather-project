@@ -4,6 +4,7 @@ import com.databricks.dbutils_v1.DBUtilsHolder.dbutils
 import org.apache.spark.sql.DataFrame
 
 object DataframeWriter {
+
   def storeDataframe(dataFrame: DataFrame): Unit = {
     dataFrame.write.mode("overwrite").
       partitionBy("timestamp").

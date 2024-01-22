@@ -1,7 +1,11 @@
 package forecast.ingestion
 
+import com.databricks.dbutils_v1.DBUtilsHolder.dbutils
+
 object ApiRequest {
-  def ApiConnectionForecast(location: String, apiKey: String): Map[String, Any] = {
+
+  def ApiConnectionForecast(location: String): Map[String, Any] = {
+    val apiKey: String = dbutils.secrets.get(scope = "scope-weather", key = "api")
 
     val paramMapForecast: Map[String, String] = Map(
       "location" -> location,

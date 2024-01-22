@@ -1,15 +1,18 @@
 package realtime.ingestion
 
-import realtime.sparkConfig
+import realtime.spark
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types._
-object DataframeLoader extends sparkConfig.sparkProvider {
+
+object DataframeLoader extends spark.sparkProvider {
 
   import spark.implicits._
 
   def loadDataFrame(jsonString: String): DataFrame = {
-    val realtimeSchema = StructType(Seq(
-      StructField("data", StructType(Seq(
+    val realtimeSchema = StructType(
+      Seq(
+      StructField("data", StructType(
+        Seq(
         StructField("time", StringType),
         StructField("values", StructType(Seq(
           StructField("cloudBase", DoubleType),
@@ -42,7 +45,7 @@ object DataframeLoader extends sparkConfig.sparkProvider {
       )))
     ))
 
-    val testDF: DataFrame = spark.read.schema(realtimeSchema).json(Seq(jsonString).toDS)
-    testDF
+    val loadedDF: DataFrame = spark.read.schema(realtimeSchema).json(Seq(jsonString).toDS)
+    loadedDF
   }
 }

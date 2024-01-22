@@ -1,4 +1,4 @@
-package realtime.sparkConfig
+package realtime.spark
 
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
@@ -25,5 +25,4 @@ trait sparkProvider {
 
   val spark = SparkSession.builder.config(conf).getOrCreate()
   lazy val sc = spark.sparkContext
-
 }

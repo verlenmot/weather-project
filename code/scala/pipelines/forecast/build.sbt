@@ -4,7 +4,7 @@ ThisBuild / scalaVersion := "2.12.18"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "pipeline_foreceast"
+    name := "forecast"
   )
 
 val sparkVersion = "3.4.2"
@@ -18,5 +18,5 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %% "requests" % "0.8.0",
 
   // Storage
-   "com.databricks" %% "dbutils-api" % "0.0.6",
+   "com.databricks" %% "dbutils-api" % "0.0.6"
   )

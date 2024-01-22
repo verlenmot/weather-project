@@ -1,10 +1,10 @@
 package forecast.ingestion
 
-import forecast.sparkConfig
+import forecast.spark
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types._
 
-object DataframeLoader extends sparkConfig.sparkProvider {
+object DataframeLoader extends spark.sparkProvider {
 
   import spark.implicits._
 
@@ -167,8 +167,8 @@ object DataframeLoader extends sparkConfig.sparkProvider {
       )
     )
 
-    val testDF: DataFrame = spark.read.schema(forecastSchema).json(Seq(jsonString).toDS)
-    testDF
+    val loadedDF: DataFrame = spark.read.schema(forecastSchema).json(Seq(jsonString).toDS)
+    loadedDF
   }
 
 

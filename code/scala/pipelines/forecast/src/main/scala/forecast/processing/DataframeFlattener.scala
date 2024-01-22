@@ -5,7 +5,7 @@ import org.apache.spark.sql.functions._
 
 object DataframeFlattener {
 
-  def flattenForecastDataframe(nestedDf: DataFrame, timestep: String): DataFrame = {
+  def flattenDataframe(nestedDf: DataFrame, timestep: String): DataFrame = {
     val unpackedDf = nestedDf.selectExpr("timestamp","location.*", "timelines.*")
 
     val explodeDf = unpackedDf.select(
