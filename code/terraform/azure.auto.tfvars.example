@@ -1,0 +1,10 @@
+client_id       = ""
+client_secret   = ""
+tenant_id       = ""
+subscription_id = ""
+api_key         = ""
+
+ip_exceptions = [""]
+alert_email   = ""
+city          = "Amsterdam"
+    
