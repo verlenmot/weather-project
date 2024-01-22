@@ -3,6 +3,7 @@ package realtime.sparkConfig
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import com.databricks.dbutils_v1.DBUtilsHolder.dbutils
+
 trait sparkProvider {
 
   val defaultConf = new SparkConf()

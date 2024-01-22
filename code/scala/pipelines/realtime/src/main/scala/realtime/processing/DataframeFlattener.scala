@@ -1,8 +1,8 @@
 package realtime.processing
 
-object DataframeFlattener {
+import org.apache.spark.sql.DataFrame
 
-  import org.apache.spark.sql.DataFrame
+object DataframeFlattener {
 
   def flattenForecastDataframe(nestedDf: DataFrame): DataFrame = {
     val unpackedDf = nestedDf.selectExpr("timestamp","location.*", "data.*")

@@ -1,6 +1,5 @@
 package realtime.archival
 
-
 import com.databricks.dbutils_v1.DBUtilsHolder.dbutils
 import org.apache.spark.sql.DataFrame
 

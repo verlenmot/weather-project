@@ -3,6 +3,7 @@ package forecast.ingestion
 import forecast.sparkConfig
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types._
+
 object DataframeLoader extends sparkConfig.sparkProvider {
 
   import spark.implicits._
