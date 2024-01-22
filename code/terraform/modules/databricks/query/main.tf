@@ -39,7 +39,7 @@ resource "databricks_sql_query" "forecast_tables" {
   data_source_id = var.warehouse_id
   name           = "Forecast tables"
   query          = <<-EOT
-                        CREATE TABLE IF NOT EXISTS hourlyforecast (
+                        CREATE TABLE IF NOT EXISTS hourly_forecast (
                         id BIGINT GENERATED ALWAYS AS IDENTITY,
                         timestamp TIMESTAMP NOT NULL,
                         date STRING NOT NULL,
@@ -63,7 +63,7 @@ resource "databricks_sql_query" "forecast_tables" {
                         weatherCondition STRING) 
                         USING DELTA;
 
-                        CREATE TABLE IF NOT EXISTS dailyforecast (
+                        CREATE TABLE IF NOT EXISTS daily_forecast (
                         id BIGINT GENERATED ALWAYS AS IDENTITY,
                         timestamp TIMESTAMP NOT NULL,
                         date STRING NOT NULL,
@@ -171,8 +171,8 @@ resource "databricks_sql_query" "hftemperature" {
   name           = "Hourly Temperature Forecast"
   query          = <<-EOT
                         SELECT date AS Date, hour AS Hour, CONCAT(temperature, "°C") AS Temperature, CONCAT(temperatureApparent, "°C") As ApparentTemperature,
-                         CONCAT(humidity, "%") AS Humidity, UVindex FROM hourlyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM hourlyforecast);
+                         CONCAT(humidity, "%") AS Humidity, UVindex FROM hourly_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM hourly_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
@@ -182,8 +182,8 @@ resource "databricks_sql_query" "hfprecipitation" {
   name           = "Hourly Rain Forecast"
   query          = <<-EOT
                         SELECT date AS Date, hour AS Hour, CONCAT(precipitationProbability, "%") AS PrecipitationProbability,
-                        CONCAT(rainIntensity, " mm/hr") AS RainIntensity FROM hourlyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM hourlyforecast);
+                        CONCAT(rainIntensity, " mm/hr") AS RainIntensity FROM hourly_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM hourly_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
@@ -193,8 +193,8 @@ resource "databricks_sql_query" "hfwind" {
   name           = "Hourly Wind Forecast"
   query          = <<-EOT
                         SELECT date AS Date, hour AS Hour, CONCAT(windSpeed, " m/s") AS WindSpeed, CONCAT(windGust, " m/s") AS WindGust,
-                        CONCAT(cloudcover, "%") AS CloudCover, CONCAT(visibility, " km") AS Visibility FROM hourlyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM hourlyforecast);
+                        CONCAT(cloudcover, "%") AS CloudCover, CONCAT(visibility, " km") AS Visibility FROM hourly_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM hourly_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
@@ -204,8 +204,8 @@ resource "databricks_sql_query" "hfweatherCondition" {
   data_source_id = var.warehouse_id
   name           = "Hourly Conditions Forecast"
   query          = <<-EOT
-                        SELECT date AS Date, hour AS Hour, weatherCondition AS WeatherCondition FROM hourlyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM hourlyforecast);
+                        SELECT date AS Date, hour AS Hour, weatherCondition AS WeatherCondition FROM hourly_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM hourly_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
@@ -221,8 +221,8 @@ resource "databricks_sql_query" "dftemperature" {
                         CONCAT(humidityMin, "%") AS MinHumidity,
                         UVindexMax As MaxUvindex,
                         UVindexMin AS MinUVindex
-                          FROM dailyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM dailyforecast);
+                          FROM daily_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM daily_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
@@ -234,8 +234,8 @@ resource "databricks_sql_query" "dfprecipitation" {
                         SELECT date AS Date, CONCAT(precipitationProbabilityMax, "%") AS MaxPrecipitationProbability,
                          CONCAT(precipitationProbabilityMin, "%") AS MinPrecipitationProbability,
                          CONCAT(rainIntensityMax, " mm/hr") AS MaxRainIntensity,
-                         CONCAT(rainIntensityMin, " mm/hr") AS MinRainIntensity FROM dailyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM dailyforecast);
+                         CONCAT(rainIntensityMin, " mm/hr") AS MinRainIntensity FROM daily_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM daily_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
@@ -251,8 +251,8 @@ resource "databricks_sql_query" "dfwind" {
                         CONCAT(cloudcoverMax, "%") AS MaxCloudCover,
                         CONCAT(cloudcoverMin, "%") AS MinCloudCover,
                         CONCAT(visibilityMax, " km") AS MaxVisibility,
-                        CONCAT(visibilityMin, " km") AS MinVisibility FROM dailyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM dailyforecast);
+                        CONCAT(visibilityMin, " km") AS MinVisibility FROM daily_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM daily_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
@@ -263,8 +263,8 @@ resource "databricks_sql_query" "dfweatherCondition" {
   name           = "Daily Conditions Forecast"
   query          = <<-EOT
                         SELECT date AS date, weatherConditionMax AS BestWeatherCondition,
-                         weatherConditionMin AS WorstWeatherCondition FROM dailyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM dailyforecast);
+                         weatherConditionMin AS WorstWeatherCondition FROM daily_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM daily_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
@@ -278,8 +278,8 @@ resource "databricks_sql_query" "dfcelestial" {
                         CONCAT(extract(HOUR FROM sunsetTime), ":",extract(MINUTE FROM sunsetTime)) AS Sunset,             
                         CONCAT(extract(HOUR FROM moonriseTime), ":",extract(MINUTE FROM moonriseTime)) AS Moonrise,
                         CONCAT(extract(HOUR FROM moonsetTime), ":",extract(MINUTE FROM moonsetTime)) AS Moonset       
-                         FROM dailyforecast
-                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM dailyforecast);
+                         FROM daily_forecast
+                        WHERE `timestamp` = (SELECT max(`timestamp`) FROM daily_forecast);
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
