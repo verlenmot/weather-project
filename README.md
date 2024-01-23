@@ -8,3 +8,9 @@ This application is a basic pipeline which retrieves data on weather through an 
 - Tomorrow.io REST Weather API key
 - Docker
 - Azure Cloud Subscription with permissions
+
+## Documentation
+
+The following link contains the architectural documentation.  
+
+[Architecture](/documentation/architecture/architecture.md)
