@@ -49,7 +49,7 @@ The application is written in Scala 2.12.
 It performs API data retrieval, Spark processing and data storage.  
 It is developed in intelliJ IDEA CE, and built with sbt.  
 The code is split up in separate packages and objects, which are then integrated into one Main object.  
-It is delivered as a JAR file.  
+It is delivered as a JAR file, uploaded as library to a cluster.  
 
 [Code](/documentation/packages/main.md)
 
@@ -69,6 +69,7 @@ Spark Version 3.4.1
 
 The Hive metastore of the Databricks Workspace serves as the storage location of the processed data.  
 Three tables (realtime, hourly_forecast, daily_forecast) are created, which each Dataframe is written to.  
+Each table is a Delta table.  
 
 [Tables](/code/terraform/modules/databricks/query/main.tf)
 
