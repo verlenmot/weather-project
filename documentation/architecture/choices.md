@@ -1,27 +1,11 @@
-# Architectural Choices
 
-There were two ways in which I wanted to structure the pipeline.  
-The difference resides in the way Spark is used and in the way the pipeline is orchestrated.
+## Choice  
 
-![Possible architectures](architecture-ideas.png)
-
-## First Idea
-
-My first idea was to retrieve the data from the API by using Azure Data Factory (using REST connector or Scala code).  
-After this, the retrieved data would be processed using a Spark cluster on HDInsight.
-
-## Second Idea
-
-My second idea was to orchestrate everything using Databricks.  
-The data processing would take place using a Spark cluster on Databricks.
-
-## Choice
-
-I opted for the second architecture, as it simpler and contains more current technologies.  
+I opted for the Databricks as it simpler and contains more current technologies.  
 The orchestration is limited to Databricks jobs, which also makes it less complex.  
 Databricks offer extensibility as it can be easily used for extended analysis.
 
-This architecture is described in detail in [Architectural Description](architecture-description.md).
+This architecture is described in detail in [Architectural Description](architecture.md).
 
 ## Authentication
 
@@ -45,3 +29,7 @@ In the final application the IP rule will be removed, so that the application is
 
 I thought about using Power BI, Azure Managed Grafana and Grafana Cloud for dashboards.  
 I opted for Azure Databricks Dashboards as it is the least complex option and pairs well with Terraform.  
+
+Although the DBU/hour costs are more expensive than a classic warehouse, the serverless warehouse stops after 1 minute compared to 10 minutes for classic.  
+It is also able to spin up within 6 seconds, compared to 5 minutes for the classic warehouse.  
+This reduces costs and reduces the latency of the dashboards: processed data can be served in near real-time.
