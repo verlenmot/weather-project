@@ -1,35 +1,53 @@
+# Architectural Choices
 
-## Choice  
+The architecture is described in detail in [Architectural Description](architecture.md).
+
+## Databricks
 
 I opted for the Databricks as it simpler and contains more current technologies.  
 The orchestration is limited to Databricks jobs, which also makes it less complex.  
-Databricks offer extensibility as it can be easily used for extended analysis.
+Databricks offer extensibility as it can be easily used for additional analysis.
 
-This architecture is described in detail in [Architectural Description](architecture.md).
+## VNET Injection
 
-## Authentication
+In order for Databricks to work with private storage accounts, I had to inject it into a virtual network.  
+I could set my storage account to public access, but this would reduce security.  
 
-For now, authentication to Azure is done through az login.  
-This will be changed to service principal in the final application.
+## Cluster pool
 
-## Networking Discussion
+I set up a cluster pool so that the jobs run faster each time (as Spark is pre-installed and nodes do not need to start up).  
+The first run takese 6-9 minutes, while subsequent runs take 3-5 minutes.  
 
-I first created a virtual network and subnets which I connected with private endpoints to account storage and key vault.  
-As I ran into issues with Terraform, I changed the private endpoints to service endpoints, with network rules on the services allowing the subnet.  
-This resulted in different issues, which I solved by adding my client IP to the allowed IP list.  
-  
-However, this setup became complex when adding a Databricks workspace and trying to connect it to the virtual network.  
-Two options I tried were VNET peering and VNET injection, but these were unnecessary.  
-  
-I decided to remove the virtual network, subnets and service endpoints; I replaced these with adding "AzureServices" to the Bypass in network rules.  
-This way, the Storage and Key Vault services are only accessible with my client IP and Azure Databricks, without having to set up a special private network.  
-In the final application the IP rule will be removed, so that the application is more secure.  
+## JAR
+
+JAR files are used instead of notebooks as they allow for better data engineering practices.  
+In addition, all dependencies are additionally installed so the code runs faster each time.  
+
+## Dbutils
+
+In order to enhance security, the JAR file retrieves the storage account SAS token, name and the API key from dbutils.secrets.  
+This way it does not need to be hardcoded in the JAR or passed as a plaintext parameter.  
 
 ## Dashboard
 
 I thought about using Power BI, Azure Managed Grafana and Grafana Cloud for dashboards.  
-I opted for Azure Databricks Dashboards as it is the least complex option and pairs well with Terraform.  
+I opted for Azure Databricks Dashboards as it is the most simple option and forms a logical next step after processing on Databricks.  
+It also pairs well with Terraform.  
 
-Although the DBU/hour costs are more expensive than a classic warehouse, the serverless warehouse stops after 1 minute compared to 10 minutes for classic.  
+## SQL Serverless Warehouse
+
+Although the DBU/hour costs for a serverless warehouse are more expensive than for a classic warehouse,  
+the serverless warehouse stops after 1 minute compared to 10 minutes for classic.  
 It is also able to spin up within 6 seconds, compared to 5 minutes for the classic warehouse.  
-This reduces costs and reduces the latency of the dashboards: processed data can be served in near real-time.
+The choice for serverless reduces costs and reduces the latency of the dashboards: processed data can be displayed in near real-time.
+
+## Terraform
+
+The backend configuration is on Azure.  
+The data transit goes over the Azure Network instead of the local network, which improves security.  
+
+Authentication to Azure is done through a service principal with variables in auto.tfvars.  
+Backend configuration is done with a configuration file, so that nothing is hard coded.  
+
+The Terraform resources are grouped into different logical modules.  
+Modularization enhances security as other resources can only acces what is declared as an output.
