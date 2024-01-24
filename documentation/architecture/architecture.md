@@ -88,6 +88,7 @@ Small transformations such as adding measurement units and extracting time are p
 The dashboard is a Databricks SQL Dashboard.  
 Each query is displayed through a detailed view vizualisation and linked with a dashboard widget.  
 For hourly and daily data, the user can cycle through the forecasts.  
+The time displayed in the dashboard is in UTC due to an API limitation.
 
 [Dashboard](/code/terraform/modules/databricks/visualisation/main.tf)
 
@@ -111,9 +112,3 @@ This application uses a service principal with contributor role as authenticatio
 The sensitive variables are inserted with an .auto.tfvars file.
 
 [Terraform code](/code/terraform/main.tf)
-
-## Docker
-
-The application is delivered as a Dockerfile.  
-
-[Docker code](/Dockerfile)
