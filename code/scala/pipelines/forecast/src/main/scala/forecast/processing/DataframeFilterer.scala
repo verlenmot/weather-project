@@ -26,7 +26,7 @@ object DataframeFilterer {
 
   def timeSplitHourly(df: DataFrame): DataFrame = {
     val timeDF = df.withColumn("date", date_format(col("time"), "yyyy-MM-dd"))
-                  .withColumn("hour", hour(to_timestamp(col("time"))))
+                  .withColumn("hour", hour(col("time")))
     timeDF
   }
 }

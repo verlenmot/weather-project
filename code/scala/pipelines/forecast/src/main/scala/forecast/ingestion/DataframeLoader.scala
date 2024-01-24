@@ -15,7 +15,7 @@ object DataframeLoader extends spark.sparkProvider {
           Seq(
             StructField("hourly", ArrayType(StructType(
               Seq(
-                StructField("time", StringType),
+                StructField("time", TimestampType),
                 StructField("values", StructType(
                   Seq(
                     StructField("cloudBase", DoubleType),
@@ -53,7 +53,7 @@ object DataframeLoader extends spark.sparkProvider {
             ))),
             StructField("daily", ArrayType(StructType(
               Seq(
-                StructField("time", StringType),
+                StructField("time", TimestampType),
                 StructField("values", StructType(
                   Seq(
                     StructField("cloudBaseAvg", DoubleType),
