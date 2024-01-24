@@ -1,7 +1,7 @@
 # Internal project files
 internal/
 **/*.tfstate*
-**/*.tfvars
+**/azure.auto.tfvars
 **/*.terraform*
 **/backend.config
 
