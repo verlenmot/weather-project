@@ -31,7 +31,7 @@ This application is a basic pipeline which retrieves data on weather through an 
 Fill in the following configuration files (replace ${...} with "value"):  
 
 [Backend configuration](/code/terraform/user-backend.config)  
-[Terraform configuration](/code/terraform/user.tfvars)  
+[Terraform configuration](/code/terraform/user.auto.tfvars)  
 
 client_id = appId  
 client_secret = password  
