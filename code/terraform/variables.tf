@@ -52,12 +52,10 @@ variable "project_name" {
 
 variable "forecast_source" {
   description = "Path to forecast jar"
-  default     = ""
 }
 
 variable "realtime_source" {
   description = "Path to realtime jar"
-  default     = ""
 }
 
 variable "city" {
