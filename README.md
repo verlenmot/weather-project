@@ -3,6 +3,10 @@
 This project aims to integrate the technologies learnt during the bootcamp and through certifications into a deliverable application.
 This application is a basic pipeline which retrieves data on weather through an API, processes it, stores it and delivers it to a dashboard.
 
+## Dashboard Example
+
+[Dashboard](/dashboard.pdf)
+
 ## Requirements
 
 - Tomorrow.io REST Weather API key
@@ -54,6 +58,27 @@ Job runs can be viewed under workflow.
 
 ## Documentation
 
+### Architecture  
+
 The following link contains the architectural documentation.  
 
 [Architecture](/documentation/architecture/architecture.md)
+
+### Time  
+
+Each job takes 3 to 4 minutes to complete.  
+
+A detailed overview of time can be found in the
+following documentation.
+
+[Time](/documentation/metrics/time.md)
+
+### Cost  
+
+The total costs of the infrastructure and jobs are
+around €2 per hour.
+
+A detailed overview of costs can be found in the
+following documentation.
+
+[Cost](/documentation/metrics/cost.md)
