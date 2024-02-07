@@ -16,5 +16,4 @@ variable "subnet_ids" {
 
 variable "secrets" {
   type = map(string)
-
 }
