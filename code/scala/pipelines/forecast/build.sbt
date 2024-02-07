@@ -18,5 +18,5 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %% "requests" % "0.8.0",
 
   // Storage
-   "com.databricks" %% "dbutils-api" % "0.0.6"
+  "com.databricks" %% "dbutils-api" % "0.0.6"
   )

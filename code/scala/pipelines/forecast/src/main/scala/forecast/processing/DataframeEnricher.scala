@@ -3,15 +3,26 @@ package forecast.processing
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 
-object DataframeEnricher {
+object DataFrameEnricher {
 
-  def requestTimeAdd(dataFrame: DataFrame, requestTime: String): DataFrame = {
-    val adjustedTime: String = requestTime.drop(5)
-    val enrichedDataFrame: DataFrame = dataFrame.withColumn("timestamp", to_timestamp(lit(adjustedTime), "dd MMM yyyy HH:mm:ss z"))
-    enrichedDataFrame
+  def addRequestTimestamp(dataFrame: DataFrame, requestTime: String): DataFrame = {
+    val adjustedTime: String = requestTime.drop(5) // Remove day-of-week
+    val timestampDataFrame: DataFrame = dataFrame.withColumn("timestamp", to_timestamp(lit(adjustedTime), "dd MMM yyyy HH:mm:ss z"))
+    timestampDataFrame
   }
 
-  def weatherFullDayTranslate(codeValue: String): String = {
+  def addForecastDay(dataFrame: DataFrame): DataFrame = {
+    val forecastDayDataFrame = dataFrame.withColumn("date", date_format(col("time"), "yyyy-MM-dd"))
+    forecastDayDataFrame
+  }
+
+  def addForecastDayAndHour(dataFrame: DataFrame): DataFrame = {
+    val forecastHourDataFrame = dataFrame.withColumn("date", date_format(col("time"), "yyyy-MM-dd"))
+      .withColumn("hour", hour(col("time")))
+    forecastHourDataFrame
+  }
+
+  def translateWeatherCode(codeValue: String): String = {
     codeValue match {
       case "0" => "unknown"
       case "1000" => "Clear, Sunny"
@@ -110,13 +121,13 @@ object DataframeEnricher {
     }
   }
 
-  val codeFullDayUDF = udf(weatherFullDayTranslate _)
+  val translateWeatherCodeUDF = udf(translateWeatherCode _)
 
-  def weatherConditionTranslate(df: DataFrame, codeType: String): DataFrame = {
+  def addWeatherConditions(dataFrame: DataFrame, codeType: String): DataFrame = {
     codeType match {
-      case "hour" => df.withColumn("weatherCondition", codeFullDayUDF(col("weatherCode")))
-      case "day" => df.withColumn("weatherConditionMin", codeFullDayUDF(col("weatherCodeMin"))).
-        withColumn("weatherConditionMax", codeFullDayUDF(col("weatherCodeMax")))
+      case "hour" => dataFrame.withColumn("weatherCondition", translateWeatherCodeUDF(col("weatherCode")))
+      case "day" => dataFrame.withColumn("weatherConditionMin", translateWeatherCodeUDF(col("weatherCodeMin"))).
+        withColumn("weatherConditionMax", translateWeatherCodeUDF(col("weatherCodeMax")))
     }
   }
 }
