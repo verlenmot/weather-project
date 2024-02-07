@@ -15,14 +15,14 @@ object Main {
     ExceptionHandler.handleExceptions(apiData("statusCode").asInstanceOf[Int])
 
     // Load
-    val loadedDataframe = DataFrameLoader.loadDataFrame(apiData("data").toString)
+    val loadedDataFrame = DataFrameLoader.loadDataFrame(apiData("data").toString)
 
     // Enrichment - Timestamp
-    val timestampDataframe = DataFrameEnricher.addRequestTimestamp(loadedDataframe, apiData("requestDatetime").asInstanceOf[Seq[String]](0))
+    val timestampDataFrame = DataFrameEnricher.addRequestTimestamp(loadedDataFrame, apiData("requestDatetime").asInstanceOf[Seq[String]](0))
 
     // Unpack
-    val unpackedHourlyDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataframe, "hourly")
-    val unpackedDailyDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataframe, "daily")
+    val unpackedHourlyDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataFrame, "hourly")
+    val unpackedDailyDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataFrame, "daily")
 
     // Cache
     val cachedHourlyDataFrame = DataFrameCacher.cacheDataFrame(unpackedHourlyDataFrame)
