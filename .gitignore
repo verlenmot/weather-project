@@ -15,6 +15,6 @@ internal/
 **/target
 **/devConfig*
 **/mockData*
-**/out*
+**/artifacts/*
 **/resources*
 **/META-INF*
