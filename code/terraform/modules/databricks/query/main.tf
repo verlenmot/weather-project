@@ -42,6 +42,7 @@ resource "databricks_sql_query" "forecast_tables" {
                         CREATE TABLE IF NOT EXISTS hourly_forecast (
                         id BIGINT GENERATED ALWAYS AS IDENTITY,
                         timestamp TIMESTAMP NOT NULL,
+                        time TIMESTAMP NOT NULL,
                         date STRING NOT NULL,
                         hour INT NOT NULL,
                         name STRING NOT NULL,
@@ -145,7 +146,7 @@ resource "databricks_sql_query" "rtprecipitation" {
 
 resource "databricks_sql_query" "rtwind" {
   data_source_id = var.warehouse_id
-  name           = "Realtime Wind"
+  name           = "Realtime Air"
   query          = <<-EOT
                         SELECT CONCAT(windSpeed, " m/s") AS WindSpeed, CONCAT(windGust, " m/s") AS WindGust,
                         CONCAT(cloudcover, "%") AS CloudCover, CONCAT(visibility, " km") AS Visibility FROM realtime
@@ -190,7 +191,7 @@ resource "databricks_sql_query" "hfprecipitation" {
 
 resource "databricks_sql_query" "hfwind" {
   data_source_id = var.warehouse_id
-  name           = "Hourly Wind Forecast"
+  name           = "Hourly Air Forecast"
   query          = <<-EOT
                         SELECT date AS Date, hour AS Hour, CONCAT(windSpeed, " m/s") AS WindSpeed, CONCAT(windGust, " m/s") AS WindGust,
                         CONCAT(cloudcover, "%") AS CloudCover, CONCAT(visibility, " km") AS Visibility FROM hourly_forecast
@@ -242,7 +243,7 @@ resource "databricks_sql_query" "dfprecipitation" {
 
 resource "databricks_sql_query" "dfwind" {
   data_source_id = var.warehouse_id
-  name           = "Daily Wind Forecast"
+  name           = "Daily Air Forecast"
   query          = <<-EOT
                         SELECT date AS Date, CONCAT(windSpeedMax, " m/s") AS MaxWindSpeed,
                          CONCAT(windSpeedMin, " m/s") AS MinWindSpeed,

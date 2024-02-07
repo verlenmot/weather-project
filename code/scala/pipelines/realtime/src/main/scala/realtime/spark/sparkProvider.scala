@@ -4,7 +4,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import com.databricks.dbutils_v1.DBUtilsHolder.dbutils
 
-trait sparkProvider {
+trait SparkProvider {
 
   val defaultConf = new SparkConf()
     .setAppName("weatherForecast")

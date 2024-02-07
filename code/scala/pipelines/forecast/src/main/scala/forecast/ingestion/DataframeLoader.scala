@@ -4,7 +4,7 @@ import forecast.spark
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types._
 
-object DataframeLoader extends spark.sparkProvider {
+object DataFrameLoader extends spark.SparkProvider {
 
   import spark.implicits._
 
@@ -167,9 +167,7 @@ object DataframeLoader extends spark.sparkProvider {
       )
     )
 
-    val loadedDF: DataFrame = spark.read.schema(forecastSchema).json(Seq(jsonString).toDS)
-    loadedDF
+    val loadedDataFrame: DataFrame = spark.read.schema(forecastSchema).json(Seq(jsonString).toDS)
+    loadedDataFrame
   }
-
-
 }

@@ -56,7 +56,7 @@ resource "databricks_job" "forecast" {
     sql_task {
       warehouse_id = var.warehouse_id
       query {
-        query_id = var.query_map["forecastTablesQuery"]
+        query_id = var.query_map["forecastTables"]
       }
     }
   }
@@ -150,7 +150,7 @@ resource "databricks_job" "realtime" {
     sql_task {
       warehouse_id = var.warehouse_id
       query {
-        query_id = var.query_map["realtimeTableQuery"]
+        query_id = var.query_map["realtimeTable"]
       }
     }
   }

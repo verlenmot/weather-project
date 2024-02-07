@@ -4,7 +4,7 @@ import com.databricks.dbutils_v1.DBUtilsHolder.dbutils
 
 object ApiRequest {
 
-  def ApiConnectionForecast(location: String): Map[String, Any] = {
+  def apiConnection(location: String): Map[String, Any] = {
     val apiKey: String = dbutils.secrets.get(scope = "scope-weather", key = "api")
 
     val paramMapRealtime: Map[String, String] = Map(
@@ -20,14 +20,12 @@ object ApiRequest {
     val statusMessage: String = r.statusMessage
     val headers: Map[String, Seq[String]] = r.headers
 
-    val ApiOutput: Map[String, Any] = Map(
+    val apiOutput: Map[String, Any] = Map(
       "statusCode" -> statusCode,
       "statusMessage" -> statusMessage,
       "data" -> text,
-      "requestDateTime" -> headers("date")
+      "requestDatetime" -> headers("date")
     )
-    
-    ApiOutput
+    apiOutput
   }
-
 }

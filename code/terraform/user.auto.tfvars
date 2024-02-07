@@ -5,7 +5,7 @@ subscription_id = ${subscription_id}
 api_key         = ${api_key}
 forecast_source = ${path_to_repo} + "/weather-project/code/scala/jars/forecast.jar"
 realtime_source = ${path_to_repo} + "/weather-project/code/scala/jars/realtime.jar"
-# Combine above sources into one string.
+# Combine above sources into one string
 
 ip_exceptions = [${user_ip}] # Client IP address
 alert_email   = ${user_email}

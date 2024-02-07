@@ -9,40 +9,44 @@ object Main {
   def main(args: Array[String]): Unit = {
 
     // Ingestion
-    val apiData: Map[String, Any] = ApiRequest.ApiConnectionForecast(args(0))
+    val apiData: Map[String, Any] = ApiRequest.apiConnection(args(0))
 
-    // Error Handling Step
-    ErrorHandler.flow(apiData("statusCode").asInstanceOf[Int])
+    // Error Handling
+    ExceptionHandler.handleExceptions(apiData("statusCode").asInstanceOf[Int])
 
-    // Load Step
-    val loadedDataframe = DataframeLoader.loadDataFrame(apiData("data").asInstanceOf[String])
+    // Load
+    val loadedDataframe = DataFrameLoader.loadDataFrame(apiData("data").toString)
 
-    // Enrichment Step
-    val enrichedTimeDataframe = DataframeEnricher.requestTimeAdd(loadedDataframe, apiData("requestDateTime").asInstanceOf[Seq[String]](0))
+    // Enrichment - Timestamp
+    val timestampDataframe = DataFrameEnricher.addRequestTimestamp(loadedDataframe, apiData("requestDatetime").asInstanceOf[Seq[String]](0))
 
-    // Unpack Step
-    val flattenedHourlyDf = DataframeFlattener.flattenDataframe(enrichedTimeDataframe, "hourly")
-    val flattenedDailyDf = DataframeFlattener.flattenDataframe(enrichedTimeDataframe, "daily")
+    // Unpack
+    val unpackedHourlyDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataframe, "hourly")
+    val unpackedDailyDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataframe, "daily")
 
-    // Archival Step
-    DataframeWriter.storeDataframe(flattenedHourlyDf)
-    DataframeWriter.storeDataframe(flattenedDailyDf)
+    // Cache
+    val cachedHourlyDataFrame = DataFrameCacher.cacheDataFrame(unpackedHourlyDataFrame)
+    val cachedDailyDataFrame = DataFrameCacher.cacheDataFrame(unpackedDailyDataFrame)
 
-    // Enrichment step
-    val enrichedHourlyDf = DataframeFilterer.timeSplitHourly(flattenedHourlyDf)
-    val enrichedDailyDf = DataframeFilterer.timeSplitDaily(flattenedDailyDf)
+    // Archival
+    DataFrameArchiver.storeDataFrame(cachedHourlyDataFrame)
+    DataFrameArchiver.storeDataFrame(cachedDailyDataFrame)
 
-    // Filter Step
-    val filteredHourlyDf = DataframeFilterer.filterHourlyDataframe(enrichedHourlyDf)
-    val filteredDailyDf = DataframeFilterer.filterDailyDataframe(enrichedDailyDf)
+    // Filter
+    val filteredHourlyDataFrame = DataFrameFilterer.filterHourlyDataFrame(unpackedHourlyDataFrame)
+    val filteredDailyDataFrame = DataFrameFilterer.filterDailyDataFrame(unpackedDailyDataFrame)
 
-    // Enrichment step
-    val completeHourlyDf = DataframeEnricher.weatherConditionTranslate(filteredHourlyDf, "hour")
-    val completeDailyDf = DataframeEnricher.weatherConditionTranslate(filteredDailyDf, "day")
+    // Enrichment - Forecast Day & Hour
+    val enrichedHourlyDataFrame = DataFrameEnricher.addForecastDayAndHour(filteredHourlyDataFrame)
+    val enrichedDailyDataFrame = DataFrameEnricher.addForecastDay(filteredDailyDataFrame)
 
-    // Serve step
-    completeHourlyDf.write.option("mergeSchema", "true").mode("append").saveAsTable("hourly_forecast")
-    completeDailyDf.write.option("mergeSchema", "true").mode("append").saveAsTable("daily_forecast")
+    // Enrichment - Weather Conditions
+    val completeHourlyDataFrame = DataFrameEnricher.addWeatherConditions(enrichedHourlyDataFrame, "hour")
+    val completeDailyDataFrame = DataFrameEnricher.addWeatherConditions(enrichedDailyDataFrame, "day")
+
+    // Serve
+    completeHourlyDataFrame.write.option("mergeSchema", "true").mode("append").saveAsTable("hourly_forecast")
+    completeDailyDataFrame.write.option("mergeSchema", "true").mode("append").saveAsTable("daily_forecast")
 
   }
 }

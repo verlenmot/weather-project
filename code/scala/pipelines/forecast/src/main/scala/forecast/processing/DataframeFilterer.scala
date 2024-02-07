@@ -1,33 +1,24 @@
 package forecast.processing
 
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.functions._
 
-object DataframeFilterer {
+object DataFrameFilterer {
 
-  def filterHourlyDataframe(df: DataFrame): DataFrame = {
-    val filteredDF = df.select("timestamp", "date", "hour", "name", "temperature", "temperatureApparent", "humidity", "cloudCover",
+  def filterHourlyDataFrame(dataFrame: DataFrame): DataFrame = {
+    val filteredDataFrame = dataFrame.select("timestamp", "name", "time", "temperature", "temperatureApparent", "humidity", "cloudCover",
       "precipitationProbability", "rainAccumulation", "rainIntensity", "snowAccumulation", "snowIntensity","visibility",
       "windSpeed", "windGust", "uvIndex", "uvHealthConcern", "weatherCode").na.fill(0)
-    filteredDF}
+    filteredDataFrame
+  }
 
-  def filterDailyDataframe(df: DataFrame): DataFrame = {
-    val filteredDF = df.select("timestamp", "date", "name", "temperatureMin", "temperatureMax", "temperatureApparentMin",
+  def filterDailyDataFrame(dataFrame: DataFrame): DataFrame = {
+    val filteredDataFrame = dataFrame.select("timestamp", "name", "time", "temperatureMin", "temperatureMax", "temperatureApparentMin",
       "temperatureApparentMax", "humidityMin", "humidityMax", "cloudCoverMin", "cloudCoverMax", "precipitationProbabilityMin",
       "precipitationProbabilityMax", "rainAccumulationMin","rainAccumulationMax", "rainIntensityMin", "rainIntensityMax",
       "snowAccumulationMin", "snowAccumulationMax", "snowIntensityMin", "snowIntensityMax", "visibilityMin", "visibilityMax",
       "windSpeedMin", "windSpeedMax", "windGustMin", "windGustMax","uvIndexMin", "uvIndexMax", "uvHealthConcernMin",
       "uvHealthConcernMax", "weatherCodeMin", "weatherCodeMax", "moonriseTime", "moonsetTime", "sunriseTime", "sunsetTime").na.fill(0)
-    filteredDF}
-
-  def timeSplitDaily(df: DataFrame): DataFrame = {
-    val timeDF = df.withColumn("date", date_format(col("time"), "yyyy-MM-dd"))
-    timeDF}
-
-  def timeSplitHourly(df: DataFrame): DataFrame = {
-    val timeDF = df.withColumn("date", date_format(col("time"), "yyyy-MM-dd"))
-                  .withColumn("hour", hour(col("time")))
-    timeDF
+    filteredDataFrame
   }
 }
 
