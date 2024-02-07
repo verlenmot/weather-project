@@ -23,8 +23,11 @@ object Main {
     // Unpack
     val unpackedDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataFrame)
 
+    // Cache
+    val cachedDataFrame = DataFrameCacher.cacheDataFrame(unpackedDataFrame)
+
     // Archival
-    DataFrameArchiver.storeDataFrame(unpackedDataFrame)
+    DataFrameArchiver.storeDataFrame(cachedDataFrame)
 
     // Filter
     val filteredDataFrame = DataFrameFilterer.filterDataFrame(unpackedDataFrame)

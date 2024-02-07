@@ -24,9 +24,13 @@ object Main {
     val unpackedHourlyDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataframe, "hourly")
     val unpackedDailyDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataframe, "daily")
 
+    // Cache
+    val cachedHourlyDataFrame = DataFrameCacher.cacheDataFrame(unpackedHourlyDataFrame)
+    val cachedDailyDataFrame = DataFrameCacher.cacheDataFrame(unpackedDailyDataFrame)
+
     // Archival
-    DataFrameArchiver.storeDataFrame(unpackedHourlyDataFrame)
-    DataFrameArchiver.storeDataFrame(unpackedDailyDataFrame)
+    DataFrameArchiver.storeDataFrame(cachedHourlyDataFrame)
+    DataFrameArchiver.storeDataFrame(cachedDailyDataFrame)
 
     // Filter
     val filteredHourlyDataFrame = DataFrameFilterer.filterHourlyDataFrame(unpackedHourlyDataFrame)
