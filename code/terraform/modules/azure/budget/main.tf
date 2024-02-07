@@ -5,7 +5,7 @@ resource "azurerm_consumption_budget_resource_group" "bdg" {
   resource_group_id = var.rg_id
 
   amount     = var.amount_array[count.index]
-  time_grain = "Monthly"
+  time_grain = "Annually"
 
   time_period {
     start_date = "2024-01-01T00:00:00Z"
