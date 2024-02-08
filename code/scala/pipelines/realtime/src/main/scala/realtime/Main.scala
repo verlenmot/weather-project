@@ -18,7 +18,7 @@ object Main {
     val loadedDataFrame = DataFrameLoader.loadDataFrame(apiData("data").toString)
 
     // Enrichment - Timestamp
-    val timestampDataFrame = DataFrameEnricher.addRequestTimestamp(loadedDataFrame, apiData("requestDatetime").asInstanceOf[Seq[String]](0))
+    val timestampDataFrame = DataFrameEnricher.addRequestTimestamp(loadedDataFrame, apiData("requestDatetime").asInstanceOf[Seq[String]].head)
 
     // Unpack
     val unpackedDataFrame = DataFrameUnpacker.unpackDataFrame(timestampDataFrame)
