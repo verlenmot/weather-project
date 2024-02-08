@@ -37,8 +37,8 @@ object Main {
     val filteredDailyDataFrame = DataFrameFilterer.filterDailyDataFrame(unpackedDailyDataFrame)
 
     // Enrichment - Forecast Day & Hour
-    val enrichedHourlyDataFrame = DataFrameEnricher.addForecastDayAndHour(filteredHourlyDataFrame)
-    val enrichedDailyDataFrame = DataFrameEnricher.addForecastDay(filteredDailyDataFrame)
+    val enrichedHourlyDataFrame = DataFrameEnricher.addForecastDateAndHour(filteredHourlyDataFrame)
+    val enrichedDailyDataFrame = DataFrameEnricher.addForecastDate(filteredDailyDataFrame)
 
     // Enrichment - Weather Conditions
     val completeHourlyDataFrame = DataFrameEnricher.addWeatherConditions(enrichedHourlyDataFrame, "hour")

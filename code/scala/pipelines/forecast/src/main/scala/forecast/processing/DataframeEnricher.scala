@@ -11,12 +11,12 @@ object DataFrameEnricher {
     timestampDataFrame
   }
 
-  def addForecastDay(dataFrame: DataFrame): DataFrame = {
+  def addForecastDate(dataFrame: DataFrame): DataFrame = {
     val forecastDayDataFrame = dataFrame.withColumn("date", date_format(col("time"), "yyyy-MM-dd"))
     forecastDayDataFrame
   }
 
-  def addForecastDayAndHour(dataFrame: DataFrame): DataFrame = {
+  def addForecastDateAndHour(dataFrame: DataFrame): DataFrame = {
     val forecastHourDataFrame = dataFrame.withColumn("date", date_format(col("time"), "yyyy-MM-dd"))
       .withColumn("hour", hour(col("time")))
     forecastHourDataFrame
