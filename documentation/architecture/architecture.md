@@ -23,15 +23,15 @@ All resources in this application are located in the same virtual network.
 Two subnets are constructed in order to apply VNET injection for Databricks.  
 Additional rule creation is possible with the network security group.  
 Access to the storage account and key vault is set to private:  
-only trusted Microsoft services, the subnets and the IP address of the client on which Terraform runs have acces to it.
+only trusted Microsoft services, the subnets and the IP address of the client on which Terraform runs have access to it.
 
 [Virtual Network](/code/terraform/modules/azure/vnet/main.tf)
 
 ## Azure Data Lake Storage Gen 2  
 
-The data from the API request is unpacked and enriched with the timestamp on which the it was requested.  
+The data from the API request is unpacked and enriched with the timestamp on which it was requested.  
 The files are stored in Parquet format and are partitioned on the request time and hour.  
-The forecast data and realtime data are divided in separate directories.  
+The forecast data and realtime data are divided into separate directories.  
 Access to this storage account is controlled with an account SAS token.  
 
 [Storage](/code/terraform/modules/azure/storage/main.tf)
@@ -49,7 +49,7 @@ The application is written in Scala 2.12.
 It performs API data retrieval, Spark processing and data storage.  
 It is developed in intelliJ IDEA CE, and built with sbt.  
 The code is split up in separate packages and objects, which are then integrated into one Main object.  
-It is delivered as a JAR file, uploaded as library to a cluster.  
+It is delivered as a JAR file, which is uploaded as library to a cluster.  
 
 [Code](/documentation/packages/main.md)
 
@@ -68,7 +68,7 @@ Spark Version 3.4.1
 ## Databricks Hive Metastore
 
 The Hive metastore of the Databricks Workspace serves as the storage location of the processed data.  
-Three tables (realtime, hourly_forecast, daily_forecast) are created, which each Dataframe is written to.  
+Three tables (realtime, hourly_forecast, daily_forecast) are created, which the Spark DataFrames are written to.  
 Each table is a Delta table.  
 
 [Tables](/code/terraform/modules/databricks/query/main.tf)
@@ -76,7 +76,7 @@ Each table is a Delta table.
 ## Databricks SQL Warehouse
 
 A Databricks Serverless SQL Warehouse is used to perform SQL queries on the tables in the Hive metastore.  
-The queries selects specified rows which have the latest timestamp.  
+The queries select specified rows which have the latest timestamp.  
 Small transformations such as adding measurement units and extracting time are performed with these queries.  
 
 [Serverless Warehouse](/code/terraform/modules/databricks/compute/main.tf)
@@ -86,9 +86,11 @@ Small transformations such as adding measurement units and extracting time are p
 ## Dashboard
 
 The dashboard is a Databricks SQL Dashboard.  
-Each query is displayed through a detailed view vizualisation and linked with a dashboard widget.  
-For hourly and daily data, the user can cycle through the forecasts.  
+Each query is displayed through a detailed-view vizualisation and linked to a dashboard widget.  
+For hourly and daily forecasts, the user can cycle through the data.  
 The time displayed in the dashboard is in UTC due to an API limitation.
+
+[Example](/dashboard.pdf)
 
 [Dashboard](/code/terraform/modules/databricks/visualisation/main.tf)
 
@@ -111,4 +113,4 @@ The backend is located on Azure and uses partial configuration (config file) for
 This application uses a service principal with contributor role as authentication method.  
 The sensitive variables are inserted with an .auto.tfvars file.
 
-[Terraform code](/code/terraform/main.tf)
+[Terraform](/code/terraform/main.tf)

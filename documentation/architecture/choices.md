@@ -1,6 +1,6 @@
 # Architectural Choices
 
-The architecture is described in detail in [Architectural Description](architecture.md).
+The architecture is described in detail in [Architecture Description](architecture.md).
 
 ## Databricks
 
@@ -11,27 +11,27 @@ Databricks offer extensibility as it can be easily used for additional analysis.
 ## VNET Injection
 
 In order for Databricks to work with private storage accounts, I had to inject it into a virtual network.  
-I could set my storage account to public access, but this would reduce security.  
+I could set my storage account to public access as alternative, but this would reduce security.  
 
 ## Cluster pool
 
 I set up a cluster pool so that the jobs run faster each time (as Spark is pre-installed and nodes do not need to start up).  
-The first run takese 6-9 minutes, while subsequent runs take 3-5 minutes.  
+The first run takes 6 to 9 minutes, while subsequent runs take 3 to 5 minutes.  
 
 ## JAR
 
 JAR files are used instead of notebooks as they allow for better data engineering practices.  
-In addition, all dependencies are additionally installed so the code runs faster each time.  
+In addition, all dependencies are additionally installed so the code runs faster.  
 
 ## Dbutils
 
-In order to enhance security, the JAR file retrieves the storage account SAS token, name and the API key from dbutils.secrets.  
-This way it does not need to be hardcoded in the JAR or passed as a plaintext parameter.  
+In order to enhance security, the JAR file retrieves the storage account SAS token, storage account name and the API key from dbutils.secrets.  
+By doing this, the secrets do not need to be hardcoded in the JAR or passed as plaintext parameters.  
 
 ## Dashboard
 
 I thought about using Power BI, Azure Managed Grafana and Grafana Cloud for dashboards.  
-I opted for Azure Databricks Dashboards as it is the most simple option and forms a logical next step after processing on Databricks.  
+I opted for Azure Databricks Dashboard instead as it is the most simple option and forms a logical next step after processing on Databricks.  
 It also pairs well with Terraform.  
 
 ## SQL Serverless Warehouse
@@ -47,7 +47,6 @@ The backend configuration is on Azure.
 The data transit goes over the Azure Network instead of the local network, which improves security.  
 
 Authentication to Azure is done through a service principal with variables in auto.tfvars.  
-Backend configuration is done with a configuration file, so that nothing is hard coded.  
+Backend configuration is done with a service principal and a configuration file, so that nothing is hard coded.  
 
-The Terraform resources are grouped into different logical modules.  
-Modularization enhances security as other resources can only acces what is declared as an output.
+The Terraform resources are grouped into different logical modules in order to enhance adaptability and security.  
