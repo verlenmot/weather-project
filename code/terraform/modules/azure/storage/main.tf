@@ -31,7 +31,7 @@ data "azurerm_storage_account_sas" "sas_storage" {
   connection_string = azurerm_storage_account.storage_raw.primary_connection_string
 
   start          = "2024-01-16T14:00:01Z"
-  expiry         = "2024-03-16T22:52:23Z"
+  expiry         = "2024-06-16T22:52:23Z"
   signed_version = "2022-11-02"
 
   resource_types {

@@ -6,7 +6,6 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
 }
 
-
 resource "azurerm_network_security_group" "nsg" {
   name                = "nsg-${var.project_name}-${var.project_instance}"
   resource_group_name = var.rg_name
@@ -20,7 +19,6 @@ resource "azurerm_subnet" "private" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.subnets[0]]
   service_endpoints    = ["Microsoft.KeyVault", "Microsoft.Storage"]
-
 
   delegation {
     name = "databricks"

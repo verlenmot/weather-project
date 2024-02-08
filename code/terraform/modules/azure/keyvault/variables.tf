@@ -15,5 +15,6 @@ variable "subnet_ids" {
 }
 
 variable "secrets" {
-  type = map(string)
+  description = "Map containing secrets to be inserted into key vault"
+  type        = map(string)
 }

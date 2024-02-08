@@ -48,7 +48,6 @@ resource "databricks_job" "forecast" {
     quartz_cron_expression = "0 0/12 * 1/1 * ? *"
   }
 
-
   ## tasks
   task {
     task_key = "a"
@@ -61,7 +60,6 @@ resource "databricks_job" "forecast" {
     }
   }
 
-
   task {
     task_key = "b"
 
@@ -71,11 +69,9 @@ resource "databricks_job" "forecast" {
 
     job_cluster_key = "a"
 
-
     library {
       jar = "dbfs:/${var.project_name}/forecast.jar"
     }
-
 
     spark_jar_task {
       main_class_name = "forecast.Main"
@@ -99,7 +95,6 @@ resource "databricks_job" "forecast" {
     }
   }
 }
-
 
 # Realtime job
 resource "databricks_job" "realtime" {
@@ -142,7 +137,6 @@ resource "databricks_job" "realtime" {
     quartz_cron_expression = "0 0/6 * 1/1 * ? *"
   }
 
-
   ## tasks
   task {
     task_key = "a"
@@ -166,7 +160,6 @@ resource "databricks_job" "realtime" {
     library {
       jar = "dbfs:/${var.project_name}/realtime.jar"
     }
-
 
     spark_jar_task {
       main_class_name = "realtime.Main"

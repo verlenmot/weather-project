@@ -8,5 +8,4 @@ variable "project_instance" {
 }
 
 variable "subnets" {
-
 }

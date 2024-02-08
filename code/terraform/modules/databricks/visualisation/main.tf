@@ -58,7 +58,6 @@ resource "databricks_sql_widget" "vizrtprecipitation" {
   }
 }
 
-
 resource "databricks_sql_widget" "vizrtwind" {
   dashboard_id     = databricks_sql_dashboard.dbdashboard.id
   visualization_id = databricks_sql_visualization.rtwind.id

@@ -6,5 +6,6 @@ variable "alert_email" {
 }
 
 variable "amount_array" {
-  type = list(number)
+  description = "Array containing budget sizes"
+  type        = list(number)
 }

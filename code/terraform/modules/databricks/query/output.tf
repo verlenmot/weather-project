@@ -1,4 +1,5 @@
 output "query_map" {
+  description = "Contains queries to be run in dashboard"
   value = {
     forecastTables     = "${databricks_sql_query.forecast_tables.id}"
     realtimeTable      = "${databricks_sql_query.realtime_table.id}"

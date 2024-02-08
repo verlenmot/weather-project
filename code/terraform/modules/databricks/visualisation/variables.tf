@@ -5,5 +5,4 @@ variable "directory" {
 }
 
 variable "query_map" {
-
 }

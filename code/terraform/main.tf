@@ -33,7 +33,6 @@ provider "azurerm" {
   client_secret   = var.client_secret
   tenant_id       = var.tenant_id
   subscription_id = var.subscription_id
-
 }
 
 provider "databricks" {
@@ -154,7 +153,6 @@ module "query" {
   source           = "./modules/databricks/query"
   warehouse_id     = module.compute.warehouse.data_source_id
   workspace_folder = module.setup.directory.object_id
-
 }
 
 module "visualisation" {

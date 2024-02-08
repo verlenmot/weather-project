@@ -155,12 +155,11 @@ resource "databricks_sql_query" "rtwind" {
   parent         = "folders/${var.workspace_folder}"
 }
 
-
 resource "databricks_sql_query" "rtweathercondition" {
   data_source_id = var.warehouse_id
   name           = "Realtime Conditions"
   query          = <<-EOT
-                        SELECT  weatherCondition AS WeatherCondition FROM realtime
+                        SELECT weatherCondition AS WeatherCondition FROM realtime
                         WHERE `timestamp` = (SELECT max(`timestamp`) FROM realtime);
                     EOT
   parent         = "folders/${var.workspace_folder}"
@@ -199,7 +198,6 @@ resource "databricks_sql_query" "hfwind" {
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
-
 
 resource "databricks_sql_query" "hfweatherCondition" {
   data_source_id = var.warehouse_id
@@ -257,7 +255,6 @@ resource "databricks_sql_query" "dfwind" {
                     EOT
   parent         = "folders/${var.workspace_folder}"
 }
-
 
 resource "databricks_sql_query" "dfweatherCondition" {
   data_source_id = var.warehouse_id

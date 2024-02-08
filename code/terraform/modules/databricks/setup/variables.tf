@@ -2,7 +2,8 @@ variable "project_name" {
 }
 
 variable "secret_kv" {
-  sensitive = true
+  description = "Key vault which serves as secret scope"
+  sensitive   = true
 }
 
 variable "forecast_source" {
