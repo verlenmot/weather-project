@@ -2,13 +2,12 @@
 
 Purpose: write data to a storage location.  
 
+## DataFrameArchiver
 
-## DataframeWrite
+### storeDataFrame
 
-### storeDataframe
-
-Objective: write data partitioned in parquet format to a storage container in an Azure storage account, using a SAS token.
+Objective: write data in parquet format partitioned to a storage container in an Azure storage account (using a SAS token).
 
 Inputs:  
-Dataframe  
+DataFrame  
 Storage container name located in dbutils

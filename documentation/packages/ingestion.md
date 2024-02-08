@@ -1,12 +1,12 @@
 # Ingestion package
 
-Purpose: retrieve data from the API, perform error handling, and ingest it into a Spark Dataframe.
+Purpose: retrieve data from the API, perform exception handling, and ingest it into a Spark DataFrame.
 
 ## ApiRequest
 
-### ApiConnectionForecast
+### apiConnection
 
-Objective: connect to the forecast API and retrieve necessary data and metadata.
+Objective: connect to the API (realtime or forecast) and retrieve necessary data and metadata.
 
 Inputs:  
 
@@ -14,17 +14,17 @@ Location (input as parameter on Databricks Job)
 
 Outputs:  
 
-Map[String, Any] containing  
-JSON String containing forecast data  
+Map[String, Any] containing:  
+JSON String containing API data  
 Status Code  
 Status Message  
 API Request Timestamp
 
-## ErrorHandler
+## ExceptionHandler
 
-### flow
+### handleExceptions
 
-Objective: integrate statusCheck and exceptionHandler.
+Objective: integrate statusCheck and flow.
 
 Input:  
 
@@ -42,7 +42,7 @@ Output:
 
 String containing either continue, stop or retry.
 
-### exceptionHandler
+### flow
 
 Objective: throw an exception depending on the string (continue, stop, retry) so that the job stops.  
 
@@ -54,7 +54,7 @@ String containing either continue, stop or retry.
 
 ### loadDataFrame
 
-Objective: create Dataframe schema and read the JSON string into a Dataframe using this schema.  
+Objective: create DataFrame schema and read the JSON string into a DataFrame using this schema.  
 
 Input:  
 
@@ -62,4 +62,4 @@ JSON string
 
 Output:  
 
-Dataframe
+DataFrame

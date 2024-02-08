@@ -1,10 +1,10 @@
-# spark package
+# Spark package
 
 Purpose: set up the Spark configuration for the application.  
 
-## sparkProvider
+## SparkProvider
 
 ### Description
 
-This trait contains the configuration, SparkSession and SparkContext.  
-Access to the storage location is done through a SAS token, which is retrieved from Databricks dbutils.  
+This trait contains the Spark configuration, SparkSession and SparkContext.  
+Access to the storage location is configured with a SAS token, which is retrieved from Databricks dbutils.  
