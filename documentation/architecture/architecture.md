@@ -67,7 +67,7 @@ Spark Version 3.4.1
 
 ## Databricks Hive Metastore
 
-The Hive metastore of the Databricks Workspace serves as the storage location of the processed data.  
+The Hive Metastore of the Databricks Workspace serves as the storage location of the processed data.  
 Three tables (realtime, hourly_forecast, daily_forecast) are created, which the Spark DataFrames are written to.  
 Each table is a Delta table.  
 
@@ -75,7 +75,7 @@ Each table is a Delta table.
 
 ## Databricks SQL Warehouse
 
-A Databricks Serverless SQL Warehouse is used to perform SQL queries on the tables in the Hive metastore.  
+A Databricks Serverless SQL Warehouse is used to perform SQL queries on the tables in the Hive Metastore.  
 The queries select specified rows which have the latest timestamp.  
 Small transformations such as adding measurement units and extracting time are performed with these queries.  
 
@@ -100,7 +100,7 @@ The Scala application, SQL queries and the dashboard are orchestrated with Datab
 There are two jobs: a forecast and a realtime job.  
 Each job is split up into three tasks:  
 
-1) Check whether a Hive metastore table exists, and if not, create one.  
+1) Check whether a Hive Metastore table exists, and if not, create one.  
 2) Run the Scala pipeline which is contained in a JAR file.  
 3) Refresh the dashboard with the SQL queries so that it contains the latest processed data.
 
